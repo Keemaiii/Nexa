@@ -11,30 +11,29 @@
             --bubble: #141414;
             --text: #f0f0f0;
             --text-secondary: #888888;
-            --accent: #D4AF37; /* Gold for Warm */
+            --accent: #D4AF37;
             --border: #2a2a2a;
             --success: #4ade80;
             --input-bg: #141414;
         }
 
-        /* 🌞 THEME VARIABLES: Light Mode Overrides */
+        /* 🌞 THEME VARIABLES: Light Mode */
         .light-mode {
             --bg: #ffffff;
             --bubble: #f3f4f6;
             --text: #111827;
             --text-secondary: #6b7280;
-            --accent: #a01919; /* ODS Red looks great in light mode */
+            --accent: #a01919;
             --border: #e5e7eb;
             --success: #16a34a;
             --input-bg: #f9fafb;
         }
 
-        /* Register Themes (Dynamic Accents) */
+        /* Register Themes */
         [data-register="urgent"] { --accent: #ef4444; }
         [data-register="bereaved"] { --accent: #64748b; }
         [data-register="professional"] { --accent: #3b82f6; }
 
-        /* Base Styles */
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
             background: var(--bg); 
@@ -48,21 +47,18 @@
         .chat-container { 
             width: 100%; max-width: 800px; display: flex; flex-direction: column; height: 100vh; 
             border-left: 1px solid var(--border); border-right: 1px solid var(--border); 
-            transition: border-color 0.3s ease;
         }
         
-        /* Header */
         .header { 
             padding: 1.5rem; text-align: center; border-bottom: 1px solid var(--border); 
             background: linear-gradient(180deg, var(--bubble), var(--bg)); 
             display: flex; flex-direction: column; align-items: center; position: relative;
-            transition: background 0.3s ease, border-color 0.3s ease;
         }
-        .header h1 { color: var(--text); font-size: 1.8rem; margin: 0; display: flex; align-items: center; gap: 0.5rem; }
+        .header h1 { color: var(--text); font-size: 1.8rem; margin: 0; }
         .header p { color: var(--text-secondary); margin: 0.2rem 0 0; font-size: 0.9rem; }
         .status { color: var(--success); font-size: 0.8rem; font-weight: bold; margin-top: 0.5rem; letter-spacing: 1px; }
 
-        /* Theme Toggle Button */
+        /* Theme Toggle */
         .theme-toggle {
             position: absolute; top: 1.5rem; right: 1.5rem;
             background: var(--bubble); border: 1px solid var(--border);
@@ -72,7 +68,6 @@
         }
         .theme-toggle:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-        /* Messages Area */
         .messages { 
             flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; 
             scroll-behavior: smooth; 
@@ -81,47 +76,40 @@
         .message.bot { align-self: flex-start; }
         .message.user { align-self: flex-end; flex-direction: row-reverse; }
         
-        /* Avatars (Canva Images) */
         .avatar-img { 
             width: 40px; height: 40px; border-radius: 50%; object-fit: cover; 
             border: 2px solid var(--border); flex-shrink: 0; background: var(--bubble);
         }
 
-        /* Chat Bubbles */
         .bubble { 
             background: var(--bubble); padding: 1rem 1.2rem; border-radius: 12px; 
             border: 1px solid var(--border); line-height: 1.6; white-space: pre-wrap; 
-            transition: background 0.3s ease, border-color 0.3s ease;
         }
         .user .bubble { 
             background: var(--accent); color: #ffffff; border-color: var(--accent); font-weight: 500; 
         }
-        .light-mode .user .bubble { color: #ffffff; } /* Ensure text is white on accent in light mode */
         
-        /* Voice Button */
         .voice-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; opacity: 0.6; transition: 0.2s; padding: 0.5rem; }
         .voice-btn:hover { opacity: 1; transform: scale(1.1); }
 
-        /* Input Area */
         .input-area { 
             padding: 1rem 1.5rem; border-top: 1px solid var(--border); display: flex; gap: 0.8rem; 
-            background: var(--bg); align-items: center; transition: background 0.3s ease, border-color 0.3s ease; 
+            background: var(--bg); align-items: center; 
         }
         input { 
             flex: 1; background: var(--input-bg); border: 1px solid var(--border); color: var(--text); 
-            padding: 0.8rem 1rem; border-radius: 12px; font-size: 1rem; outline: none; transition: 0.2s; 
+            padding: 0.8rem 1rem; border-radius: 12px; font-size: 1rem; outline: none; 
         }
         input:focus { border-color: var(--accent); }
         input::placeholder { color: var(--text-secondary); }
         
         .action-btn { 
             background: var(--accent); color: #ffffff; border: none; padding: 0.8rem; border-radius: 12px; 
-            font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; 
+            font-weight: bold; cursor: pointer; transition: 0.2s; 
         }
         .action-btn:hover { filter: brightness(1.1); }
         .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Quick Action Chips */
         .chips { padding: 0 1.5rem 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
         .chip { 
             background: var(--bubble); border: 1px solid var(--border); color: var(--text); 
@@ -129,10 +117,29 @@
         }
         .chip:hover { background: var(--accent); color: #ffffff; border-color: var(--accent); }
 
-        /* Animations */
+        /* Modal */
+        .modal-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; 
+            z-index: 1000; backdrop-filter: blur(4px); 
+        }
+        .modal-content { 
+            background: var(--bg); border: 1px solid var(--border); border-radius: 16px; 
+            width: 90%; max-width: 600px; height: 80vh; display: flex; flex-direction: column; overflow: hidden; 
+        }
+        .modal-header { 
+            padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); 
+            display: flex; justify-content: space-between; align-items: center; 
+        }
+        .modal-header h3 { margin: 0; color: var(--text); }
+        .close-modal { 
+            background: none; border: none; color: var(--text); font-size: 1.5rem; cursor: pointer; 
+        }
+        .modal-body { flex: 1; }
+        .modal-body iframe { width: 100%; height: 100%; border: none; }
+
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Mic listening animation */
         .listening { animation: pulse 1.5s infinite; border-color: #ef4444 !important; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
     </style>
@@ -148,8 +155,8 @@
 
         <div class="messages" id="messages">
             <div class="message bot">
-                <!-- 🖼️ CANVA BOT ICON -->
-                <img src="/assets/bot-icon.png" alt="Nexa Bot" class="avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>'">
+                <img src="/assets/bot-icon.png" alt="Nexa" class="avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="avatar-img" style="display:flex; align-items:center; justify-content:center; font-size:1.5rem;">🤖</div>
                 <div class="bubble">Hello! I'm <strong>Nexa</strong> 💛 Ask me about BPO, recruitment, training, logistics, resilience planning, or consulting!</div>
             </div>
         </div>
@@ -167,15 +174,15 @@
         </div>
     </div>
 
-    <!-- 📅 SEAMLESS JOTFORM MODAL -->
-    <div class="modal-overlay" id="jotformModal" onclick="if(event.target===this) closeModal()" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px);">
-        <div class="modal-content" style="background: var(--bg); border: 1px solid var(--border); border-radius: 16px; width: 90%; max-width: 600px; height: 80vh; display: flex; flex-direction: column; overflow: hidden;">
-            <div class="modal-header" style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="margin:0; color: var(--text);">📅 Book a Consultation</h3>
-                <button class="close-modal" onclick="closeModal()" style="background: none; border: none; color: var(--text); font-size: 1.5rem; cursor: pointer;">×</button>
+    <!-- 📅 JOTFORM MODAL -->
+    <div class="modal-overlay" id="jotformModal" onclick="if(event.target===this) closeModal()">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📅 Book a Consultation</h3>
+                <button class="close-modal" onclick="closeModal()">×</button>
             </div>
-            <div class="modal-body" style="flex: 1;">
-                <iframe src="https://form.jotform.com/262112347700850" title="Jotform Booking" style="width: 100%; height: 100%; border: none;"></iframe>
+            <div class="modal-body">
+                <iframe src="https://form.jotform.com/262112347700850" title="Jotform Booking"></iframe>
             </div>
         </div>
     </div>
@@ -185,7 +192,7 @@
         let isListening = false;
         let recognition;
 
-        // 🌙 THEME TOGGLE LOGIC
+        // Theme Toggle
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
             const isLight = document.body.classList.contains('light-mode');
@@ -193,12 +200,11 @@
             localStorage.setItem('nexa-theme', isLight ? 'light' : 'dark');
         }
 
-        // Load saved theme on startup
         if (localStorage.getItem('nexa-theme') === 'light') {
             toggleTheme();
         }
 
-        // 🎙️ DAY 12 INTEGRATION: Browser Native Speech-to-Text
+        // Voice Input
         if ('webkitSpeechRecognition' in window) {
             recognition = new webkitSpeechRecognition();
             recognition.continuous = false;
@@ -255,8 +261,6 @@
                 const data = await res.json();
                 removeMessage(loadingId);
                 addMessage(data.response, "bot", false, data.register);
-                
-                // 🎨 DYNAMIC THEME: Change UI accent color based on detected register!
                 document.getElementById("chatContainer").setAttribute("data-register", data.register || "warm");
             } catch (err) {
                 removeMessage(loadingId);
@@ -273,7 +277,6 @@
             const id = Date.now();
             div.id = `msg-${id}`;
             
-            // 🖼️ CHOOSE ICON BASED ON SENDER
             const avatarSrc = sender === "bot" ? "/assets/bot-icon.png" : "/assets/user-icon.png";
             const fallbackEmoji = sender === "bot" ? "🤖" : "👤";
             
@@ -298,7 +301,6 @@
             if (el) el.remove();
         }
 
-        // 🔊 DAY 12 INTEGRATION: Browser Native Text-to-Speech
         function speakText(text) {
             const cleanText = text.replace(/\*\*/g, "").replace(/<br>/g, ". ");
             const utterance = new SpeechSynthesisUtterance(cleanText);
