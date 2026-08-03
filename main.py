@@ -4,16 +4,15 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
-import os, re, json, httpx, base64
+import os, re, json
 from typing import Optional
 import google.generativeai as genai
 from dotenv import load_dotenv
 
 load_dotenv()
-
 app = FastAPI(title="Nexa All-In-One")
 
-# 🌐 MAGIC CORS FIX: Serve the frontend directly from this same server!
+# 🌐 MAGIC: Serve the frontend directly from this same server!
 @app.get("/", response_class=HTMLResponse)
 async def serve_frontend():
     with open("index.html", "r", encoding="utf-8") as f:
@@ -49,6 +48,13 @@ def detect_service(msg: str) -> Optional[str]:
             return key
     return None
 
+def detect_register(msg: str) -> str:
+    m = msg.lower()
+    if any(w in m for w in ["died", "passed away", "funeral", "loss"]): return "bereaved"
+    if any(w in m for w in ["asap", "urgent", "emergency", "now"]): return "urgent"
+    if any(w in m for w in ["regarding", "kindly", "please advise"]): return "professional"
+    return "warm"
+
 def redact_pii(text: str) -> str:
     for label, pattern in {"phone": r"\b\d{3}[-.\s]?\d{4}\b", "email": r"\b[\w\.-]+@[\w\.-]+\.\w+\b", "nin": r"\b\d{9}\b"}.items():
         text = re.sub(pattern, f"[REDACTED:{label}]", text)
@@ -60,7 +66,7 @@ def redact_pii(text: str) -> str:
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 gemini_model = genai.GenerativeModel("gemini-2.0-flash")
 
-def get_ai_response(user_msg: str, service: Optional[str]) -> str:
+def get_ai_response(user_msg: str, service: Optional[str], register: str) -> str:
     safe_msg = redact_pii(user_msg)
     
     if not check_authority(safe_msg):
@@ -68,10 +74,17 @@ def get_ai_response(user_msg: str, service: Optional[str]) -> str:
     
     svc = SERVICES.get(service, {"name": "our services", "plain": "Please visit our website for details."}) if service else {"name": "our services", "plain": "Please specify which service you need help with."}
     
+    tone_hints = {
+        "warm": "TONE: Friendly, encouraging, simple words. Add a 💛 emoji.",
+        "professional": "TONE: Polished, concise, respectful. No slang.",
+        "urgent": "TONE: Fast, direct, action-oriented. Use bullet points.",
+        "bereaved": "TONE: Open with gentle condolences. Explain gently. Max 2 sentences of facts."
+    }
+    
     prompt = f"""You are {BOT_NAME} for Outsource Development Studio in Dominica.
     GOLDEN RULE: You are the GPS. The human is the driver. NEVER quote prices or handle personal data.
     TOPIC: {svc['name']}. Plain English: {svc['plain']}.
-    TONE: Friendly, professional, and concise. Add a 💛 emoji."""
+    {tone_hints.get(register, tone_hints['warm'])}"""
     
     try:
         return gemini_model.generate_content(prompt + "\n\nUser: " + safe_msg).text
@@ -86,9 +99,17 @@ class ChatRequest(BaseModel):
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
+    register = detect_register(request.message)
     service = detect_service(request.message)
-    response_text = get_ai_response(request.message, service)
-    return {"response": response_text, "escalated": not check_authority(request.message)}
+    response_text = get_ai_response(request.message, service, register)
+    
+    # 🎨 RETURN REGISTER & SERVICE SO FRONTEND CAN CHANGE COLORS DYNAMICALLY!
+    return {
+        "response": response_text, 
+        "escalated": not check_authority(request.message),
+        "register": register,
+        "service": service
+    }
 
 @app.get("/health")
 async def health():
