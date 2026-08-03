@@ -3,6 +3,7 @@
 # ==============================================================================
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles  # 🛑 THIS IS THE MISSING IMPORT!
 from pydantic import BaseModel
 import os, re, json
 from typing import Optional
@@ -10,12 +11,15 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 
 load_dotenv()
+
 app = FastAPI(title="Nexa All-In-One")
 
 # 🌐 SERVE STATIC ASSETS (Canva Icons)
 # This allows the frontend to load images from the /assets folder
 if os.path.exists("assets"):
     app.mount("/assets", StaticFiles(directory="assets"), name="assets")
+
+# ... (keep the rest of your main.py exactly as it was below this line) ...
     
 # 🌐 MAGIC: Serve the frontend directly from this same server!
 @app.get("/", response_class=HTMLResponse)
