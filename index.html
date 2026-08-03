@@ -5,172 +5,210 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nexa | Outsource Development Studio</title>
     <style>
-        /* 🎨 THEME VARIABLES: Dark Mode (Default) */
+        /* 🎨 ODS BRAND COLORS + NISSY-STYLE CLEAN LAYOUT */
         :root {
+            --bg: #F9F9F9;           /* Client Off-White */
+            --surface: #FFFFFF;      /* Pure White for cards/bubbles */
+            --text: #000000;         /* Client Black */
+            --text-secondary: #6c7e7e; /* Client Slate Gray */
+            --accent: #a01919;       /* Client Deep Red */
+            --accent-hover: #801414; /* Darker Red for hover */
+            --border: #c0b8b9;       /* Client Light Gray */
+            --success: #16a34a;      /* Green for online status */
+        }
+
+        /* Dark Mode Overrides (Toggleable) */
+        .dark-mode {
             --bg: #0a0a0a;
-            --bubble: #141414;
+            --surface: #141414;
             --text: #f0f0f0;
             --text-secondary: #888888;
-            --accent: #D4AF37;
             --border: #2a2a2a;
-            --success: #4ade80;
-            --input-bg: #141414;
         }
 
-        /* 🌞 THEME VARIABLES: Light Mode */
-        .light-mode {
-            --bg: #ffffff;
-            --bubble: #f3f4f6;
-            --text: #111827;
-            --text-secondary: #6b7280;
-            --accent: #a01919;
-            --border: #e5e7eb;
-            --success: #16a34a;
-            --input-bg: #f9fafb;
-        }
-
-        /* Register Themes */
-        [data-register="urgent"] { --accent: #ef4444; }
-        [data-register="bereaved"] { --accent: #64748b; }
-        [data-register="professional"] { --accent: #3b82f6; }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
             background: var(--bg); 
             color: var(--text); 
-            margin: 0; 
             display: flex; 
             justify-content: center; 
             min-height: 100vh; 
             transition: background 0.3s ease, color 0.3s ease; 
         }
+
+        /* Nissy-Style Centered Container */
         .chat-container { 
-            width: 100%; max-width: 800px; display: flex; flex-direction: column; height: 100vh; 
-            border-left: 1px solid var(--border); border-right: 1px solid var(--border); 
+            width: 100%; max-width: 768px; display: flex; flex-direction: column; height: 100vh; 
+            background: var(--bg);
         }
         
+        /* Clean Header */
         .header { 
-            padding: 1.5rem; text-align: center; border-bottom: 1px solid var(--border); 
-            background: linear-gradient(180deg, var(--bubble), var(--bg)); 
+            padding: 1.5rem 2rem; 
+            border-bottom: 1px solid var(--border); 
+            background: var(--surface);
             display: flex; flex-direction: column; align-items: center; position: relative;
+            transition: background 0.3s ease, border-color 0.3s ease;
         }
-        .header h1 { color: var(--text); font-size: 1.8rem; margin: 0; }
-        .header p { color: var(--text-secondary); margin: 0.2rem 0 0; font-size: 0.9rem; }
-        .status { color: var(--success); font-size: 0.8rem; font-weight: bold; margin-top: 0.5rem; letter-spacing: 1px; }
+        .header h1 { color: var(--text); font-size: 1.75rem; font-weight: 700; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.5rem; }
+        .header p { color: var(--text-secondary); font-size: 0.95rem; text-align: center; max-width: 500px; }
+        
+        .header-controls {
+            width: 100%; display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;
+        }
+        .status { color: var(--success); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.5px; display: flex; align-items: center; gap: 0.4rem; }
+        .status::before { content: ''; width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block; }
 
-        /* Theme Toggle */
+        .clear-btn {
+            background: transparent; border: 1px solid var(--border); color: var(--text-secondary);
+            padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.85rem; cursor: pointer; transition: 0.2s;
+        }
+        .clear-btn:hover { background: var(--bg); color: var(--text); border-color: var(--text-secondary); }
+
         .theme-toggle {
             position: absolute; top: 1.5rem; right: 1.5rem;
-            background: var(--bubble); border: 1px solid var(--border);
-            color: var(--text); width: 40px; height: 40px; border-radius: 50%;
-            cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
+            background: transparent; border: 1px solid var(--border);
+            color: var(--text); width: 36px; height: 36px; border-radius: 50%;
+            cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
             transition: all 0.2s ease;
         }
-        .theme-toggle:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+        .theme-toggle:hover { background: var(--bg); border-color: var(--accent); color: var(--accent); }
 
+        /* Messages Area */
         .messages { 
-            flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; 
+            flex: 1; overflow-y: auto; padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; 
             scroll-behavior: smooth; 
         }
-        .message { display: flex; gap: 0.8rem; max-width: 85%; animation: slideUp 0.3s ease; }
+        .message { display: flex; gap: 1rem; max-width: 85%; animation: slideUp 0.3s ease; }
         .message.bot { align-self: flex-start; }
         .message.user { align-self: flex-end; flex-direction: row-reverse; }
         
-        .avatar-img { 
-            width: 40px; height: 40px; border-radius: 50%; object-fit: cover; 
-            border: 2px solid var(--border); flex-shrink: 0; background: var(--bubble);
+        .avatar { 
+            width: 36px; height: 36px; border-radius: 50%; object-fit: cover; 
+            border: 1px solid var(--border); flex-shrink: 0; background: var(--surface);
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
         }
 
         .bubble { 
-            background: var(--bubble); padding: 1rem 1.2rem; border-radius: 12px; 
-            border: 1px solid var(--border); line-height: 1.6; white-space: pre-wrap; 
+            background: var(--surface); padding: 1rem 1.25rem; border-radius: 12px; 
+            border: 1px solid var(--border); line-height: 1.6; font-size: 0.95rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            transition: background 0.3s ease, border-color 0.3s ease;
         }
         .user .bubble { 
-            background: var(--accent); color: #ffffff; border-color: var(--accent); font-weight: 500; 
+            background: var(--accent); color: #ffffff; border-color: var(--accent); 
         }
         
-        .voice-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; opacity: 0.6; transition: 0.2s; padding: 0.5rem; }
-        .voice-btn:hover { opacity: 1; transform: scale(1.1); }
+        .voice-btn { background: none; border: none; font-size: 1rem; cursor: pointer; opacity: 0.5; transition: 0.2s; padding: 0.5rem; }
+        .voice-btn:hover { opacity: 1; color: var(--accent); }
 
-        .input-area { 
-            padding: 1rem 1.5rem; border-top: 1px solid var(--border); display: flex; gap: 0.8rem; 
-            background: var(--bg); align-items: center; 
+        /* Quick Action Chips (Nissy Style) */
+        .chips-container { padding: 0 2rem 1rem; }
+        .chips-label { color: var(--text-secondary); font-size: 0.85rem; font-weight: 500; margin-bottom: 0.75rem; }
+        .chips { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .chip { 
+            background: var(--surface); border: 1px solid var(--border); color: var(--text); 
+            padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 500;
+            cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
+        .chip:hover { background: var(--accent); color: #ffffff; border-color: var(--accent); transform: translateY(-1px); }
+
+        /* Input Area */
+        .input-area { 
+            padding: 1.5rem 2rem; border-top: 1px solid var(--border); display: flex; gap: 0.75rem; 
+            background: var(--surface); align-items: center; 
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .input-wrapper {
+            flex: 1; position: relative; display: flex; align-items: center;
+        }
+        .mic-btn {
+            position: absolute; left: 0.75rem; background: none; border: none; font-size: 1.1rem; 
+            cursor: pointer; color: var(--text-secondary); transition: 0.2s; padding: 0.25rem;
+        }
+        .mic-btn:hover { color: var(--accent); }
+        
         input { 
-            flex: 1; background: var(--input-bg); border: 1px solid var(--border); color: var(--text); 
-            padding: 0.8rem 1rem; border-radius: 12px; font-size: 1rem; outline: none; 
+            width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); 
+            padding: 0.85rem 1rem 0.85rem 2.5rem; border-radius: 12px; font-size: 0.95rem; outline: none; 
+            transition: border-color 0.2s ease; 
         }
         input:focus { border-color: var(--accent); }
         input::placeholder { color: var(--text-secondary); }
         
-        .action-btn { 
-            background: var(--accent); color: #ffffff; border: none; padding: 0.8rem; border-radius: 12px; 
-            font-weight: bold; cursor: pointer; transition: 0.2s; 
+        .send-btn { 
+            background: var(--accent); color: #ffffff; border: none; padding: 0.85rem 1.25rem; border-radius: 12px; 
+            font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center;
         }
-        .action-btn:hover { filter: brightness(1.1); }
-        .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        .chips { padding: 0 1.5rem 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
-        .chip { 
-            background: var(--bubble); border: 1px solid var(--border); color: var(--text); 
-            padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; cursor: pointer; transition: 0.2s; 
-        }
-        .chip:hover { background: var(--accent); color: #ffffff; border-color: var(--accent); }
+        .send-btn:hover { background: var(--accent-hover); }
+        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* Modal */
         .modal-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; 
+            background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; 
             z-index: 1000; backdrop-filter: blur(4px); 
         }
         .modal-content { 
-            background: var(--bg); border: 1px solid var(--border); border-radius: 16px; 
+            background: var(--surface); border: 1px solid var(--border); border-radius: 16px; 
             width: 90%; max-width: 600px; height: 80vh; display: flex; flex-direction: column; overflow: hidden; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
         .modal-header { 
             padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); 
             display: flex; justify-content: space-between; align-items: center; 
         }
-        .modal-header h3 { margin: 0; color: var(--text); }
+        .modal-header h3 { margin: 0; color: var(--text); font-size: 1.1rem; }
         .close-modal { 
-            background: none; border: none; color: var(--text); font-size: 1.5rem; cursor: pointer; 
+            background: none; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; line-height: 1;
         }
+        .close-modal:hover { color: var(--accent); }
         .modal-body { flex: 1; }
         .modal-body iframe { width: 100%; height: 100%; border: none; }
 
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .listening { animation: pulse 1.5s infinite; border-color: #ef4444 !important; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+        .listening { animation: pulse 1.5s infinite; border-color: var(--accent) !important; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(160, 25, 25, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(160, 25, 25, 0); } 100% { box-shadow: 0 0 0 0 rgba(160, 25, 25, 0); } }
     </style>
 </head>
 <body>
-    <div class="chat-container" id="chatContainer" data-register="warm">
+    <div class="chat-container" id="chatContainer">
         <div class="header">
-            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Light/Dark Mode" id="themeBtn">🌙</button>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme" id="themeBtn">🌙</button>
             <h1>🇩🇲 Nexa</h1>
-            <p>Your intelligent guide to Outsource Development Studio</p>
-            <div class="status">● ONLINE · AI SERVICE NAVIGATOR</div>
+            <p>Ask anything about Outsource Development Studio — BPO, recruitment, training, logistics, and more.</p>
+            
+            <div class="header-controls">
+                <div class="status">ONLINE</div>
+                <button class="clear-btn" onclick="clearChat()">Clear Chat</button>
+            </div it>
         </div>
 
         <div class="messages" id="messages">
             <div class="message bot">
-                <img src="/assets/bot-icon.png" alt="Nexa" class="avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                <div class="avatar-img" style="display:flex; align-items:center; justify-content:center; font-size:1.5rem;">🤖</div>
-                <div class="bubble">Hello! I'm <strong>Nexa</strong> 💛 Ask me about BPO, recruitment, training, logistics, resilience planning, or consulting!</div>
+                <div class="avatar">🤖</div>
+                <div class="bubble">Hello! I'm <strong>Nexa</strong>. I can help you with BPO, recruitment, UWI Cave Hill training seminars, logistics, resilience planning, and strategic consulting. What would you like to know?</div>
             </div>
         </div>
 
-        <div class="chips">
-            <button class="chip" onclick="send('What is BPO?')">💼 What is BPO?</button>
-            <button class="chip" onclick="send('Tell me about UWI seminars')">🎓 UWI Seminars</button>
-            <button class="chip" onclick="openModal()">📅 Book Consultation</button>
+        <div class="chips-container">
+            <div class="chips-label">Try asking:</div>
+            <div class="chips">
+                <button class="chip" onclick="send('What is BPO and how can it help my business?')">What is BPO?</button>
+                <button class="chip" onclick="send('Tell me about the UWI Cave Hill training seminars')">UWI Seminars</button>
+                <button class="chip" onclick="openModal()">Book a Consultation</button>
+                <button class="chip" onclick="send('What recruitment and EOR services do you offer?')">Recruitment & EOR</button>
+            </div>
         </div>
 
         <div class="input-area">
-            <button class="action-btn" id="micBtn" onclick="toggleMic()" title="Speak">🎙️</button>
-            <input type="text" id="input" placeholder="Type or speak your question..." onkeypress="if(event.key==='Enter') sendMsg()">
-            <button class="action-btn" onclick="sendMsg()" id="sendBtn">Send</button>
+            <div class="input-wrapper">
+                <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="Speak">🎙️</button>
+                <input type="text" id="input" placeholder="Message Nexa..." onkeypress="if(event.key==='Enter') sendMsg()">
+            </div>
+            <button class="send-btn" onclick="sendMsg()" id="sendBtn">Send</button>
         </div>
     </div>
 
@@ -186,33 +224,29 @@
             </div>
         </div>
     </div>
+
     <script>
         const API_URL = "/chat"; 
         let isListening = false;
         let recognition;
 
-        // 🌙 THEME TOGGLE LOGIC
+        // 🌙 THEME TOGGLE
         function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            document.getElementById('themeBtn').textContent = isLight ? '☀️' : '🌙';
-            localStorage.setItem('nexa-theme', isLight ? 'light' : 'dark');
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('themeBtn').textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('nexa-theme', isDark ? 'dark' : 'light');
         }
+        if (localStorage.getItem('nexa-theme') === 'dark') toggleTheme();
 
-        // Load saved theme on startup
-        if (localStorage.getItem('nexa-theme') === 'light') {
-            toggleTheme();
-        }
-
-        // 🎙️ DAY 12 INTEGRATION: Browser Native Speech-to-Text
+        // 🎙️ SPEECH-TO-TEXT
         if ('webkitSpeechRecognition' in window) {
             recognition = new webkitSpeechRecognition();
             recognition.continuous = false;
             recognition.interimResults = false;
             recognition.onresult = (event) => {
                 document.getElementById("input").value = event.results[0][0].transcript;
-                toggleMic(); 
-                sendMsg();   
+                toggleMic(); sendMsg();   
             };
             recognition.onerror = () => toggleMic();
         }
@@ -222,14 +256,13 @@
             const btn = document.getElementById("micBtn");
             const input = document.getElementById("input");
             if (isListening) {
-                recognition.stop();
-                isListening = false;
-                btn.style.background = "var(--bubble)";
+                recognition.stop(); isListening = false;
+                btn.style.color = "var(--text-secondary)";
                 input.classList.remove("listening");
+                input.placeholder = "Message Nexa...";
             } else {
-                recognition.start();
-                isListening = true;
-                btn.style.background = "rgba(239, 68, 68, 0.2)";
+                recognition.start(); isListening = true;
+                btn.style.color = "var(--accent)";
                 input.classList.add("listening");
                 input.placeholder = "Listening...";
             }
@@ -238,6 +271,14 @@
         function openModal() { document.getElementById("jotformModal").style.display = "flex"; }
         function closeModal() { document.getElementById("jotformModal").style.display = "none"; }
         function send(text) { document.getElementById("input").value = text; sendMsg(); }
+        
+        function clearChat() {
+            document.getElementById("messages").innerHTML = `
+                <div class="message bot">
+                    <div class="avatar">🤖</div>
+                    <div class="bubble">Hello! I'm <strong>Nexa</strong>. I can help you with BPO, recruitment, UWI Cave Hill training seminars, logistics, resilience planning, and strategic consulting. What would you like to know?</div>
+                </div>`;
+        }
 
         async function sendMsg() {
             const input = document.getElementById("input");
@@ -248,9 +289,9 @@
             input.value = "";
             
             const btn = document.getElementById("sendBtn");
-            btn.disabled = true; btn.textContent = "...";
+            btn.disabled = true; btn.innerHTML = "<span style='font-size:1.2rem'>⏳</span>";
 
-            const loadingId = addMessage("Thinking... 🤔", "bot", true);
+            const loadingId = addMessage("Thinking...", "bot", true);
 
             try {
                 const res = await fetch(API_URL, {
@@ -260,8 +301,7 @@
                 });
                 const data = await res.json();
                 removeMessage(loadingId);
-                addMessage(data.response, "bot", false, data.register);
-                document.getElementById("chatContainer").setAttribute("data-register", data.register || "warm");
+                addMessage(data.response, "bot", false);
             } catch (err) {
                 removeMessage(loadingId);
                 addMessage("😅 Oops! Connection error. Please try again.", "bot");
@@ -270,26 +310,19 @@
             }
         }
 
-        function addMessage(text, sender, isLoading = false, register = "warm") {
+        function addMessage(text, sender, isLoading = false) {
             const container = document.getElementById("messages");
             const div = document.createElement("div");
             div.className = `message ${sender}`;
             const id = Date.now();
             div.id = `msg-${id}`;
             
-            const avatarSrc = sender === "bot" ? "/assets/bot-icon.png" : "/assets/user-icon.png";
-            const fallbackEmoji = sender === "bot" ? "🤖" : "👤";
-            
-            // 🛠️ THE FIX: Use a data attribute instead of inline onclick to prevent quote/line-break crashes!
-            // We replace quotes and newlines so the HTML doesn't break.
             const safeText = text.replace(/"/g, '&quot;').replace(/\n/g, ' ');
-            
             const voiceBtn = (sender === "bot" && !isLoading) ? 
                 `<button class="voice-btn" onclick="speakText(this)" data-text="${safeText}" title="Listen">🔊</button>` : '';
 
             div.innerHTML = `
-                <img src="${avatarSrc}" alt="${sender}" class="avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                <div class="avatar-img" style="display:none; align-items:center; justify-content:center; font-size:1.2rem;">${fallbackEmoji}</div>
+                <div class="avatar">${sender === "bot" ? "🤖" : "👤"}</div>
                 <div class="bubble" style="${isLoading ? 'opacity:0.6' : ''}">
                     ${text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>")}
                 </div>
@@ -305,37 +338,18 @@
             if (el) el.remove();
         }
 
-        // 🔊 DAY 12 INTEGRATION: Robust Browser Native Text-to-Speech
         function speakText(buttonElement) {
-            // 1. Stop any currently playing speech so they don't overlap
             window.speechSynthesis.cancel();
-
-            // 2. Get the safe text from the button's data attribute
             const rawText = buttonElement.getAttribute("data-text");
-            
-            // 3. Clean up any remaining HTML tags for pure speech
             const cleanText = rawText.replace(/<[^>]*>/g, "").replace(/\*\*/g, "");
-
-            // 4. Create the speech utterance
             const utterance = new SpeechSynthesisUtterance(cleanText);
             utterance.rate = 1.0;
-            utterance.pitch = 1.0;
-
-            // 5. (Optional but professional) Try to find a clear English voice
             const voices = window.speechSynthesis.getVoices();
             const preferredVoice = voices.find(v => v.lang.includes('en-US') || v.lang.includes('en-GB'));
-            if (preferredVoice) {
-                utterance.voice = preferredVoice;
-            }
-
-            // 6. Speak!
+            if (preferredVoice) utterance.voice = preferredVoice;
             window.speechSynthesis.speak(utterance);
         }
-
-        // Pre-load voices (fixes a known Chrome bug where voices load asynchronously)
-        window.speechSynthesis.onvoiceschanged = () => {
-            window.speechSynthesis.getVoices();
-        };
+        window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
     </script>
-
-    
+</body>
+</html>
