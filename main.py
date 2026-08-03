@@ -12,6 +12,11 @@ from dotenv import load_dotenv
 load_dotenv()
 app = FastAPI(title="Nexa All-In-One")
 
+# 🌐 SERVE STATIC ASSETS (Canva Icons)
+# This allows the frontend to load images from the /assets folder
+if os.path.exists("assets"):
+    app.mount("/assets", StaticFiles(directory="assets"), name="assets")
+    
 # 🌐 MAGIC: Serve the frontend directly from this same server!
 @app.get("/", response_class=HTMLResponse)
 async def serve_frontend():
