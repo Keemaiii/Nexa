@@ -186,13 +186,12 @@
             </div>
         </div>
     </div>
-
     <script>
         const API_URL = "/chat"; 
         let isListening = false;
         let recognition;
 
-        // Theme Toggle
+        // 🌙 THEME TOGGLE LOGIC
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
             const isLight = document.body.classList.contains('light-mode');
@@ -200,11 +199,12 @@
             localStorage.setItem('nexa-theme', isLight ? 'light' : 'dark');
         }
 
+        // Load saved theme on startup
         if (localStorage.getItem('nexa-theme') === 'light') {
             toggleTheme();
         }
 
-        // Voice Input
+        // 🎙️ DAY 12 INTEGRATION: Browser Native Speech-to-Text
         if ('webkitSpeechRecognition' in window) {
             recognition = new webkitSpeechRecognition();
             recognition.continuous = false;
@@ -280,8 +280,12 @@
             const avatarSrc = sender === "bot" ? "/assets/bot-icon.png" : "/assets/user-icon.png";
             const fallbackEmoji = sender === "bot" ? "🤖" : "👤";
             
+            // 🛠️ THE FIX: Use a data attribute instead of inline onclick to prevent quote/line-break crashes!
+            // We replace quotes and newlines so the HTML doesn't break.
+            const safeText = text.replace(/"/g, '&quot;').replace(/\n/g, ' ');
+            
             const voiceBtn = (sender === "bot" && !isLoading) ? 
-                `<button class="voice-btn" onclick="speakText('${text.replace(/'/g, "\\'")}')" title="Listen">🔊</button>` : '';
+                `<button class="voice-btn" onclick="speakText(this)" data-text="${safeText}" title="Listen">🔊</button>` : '';
 
             div.innerHTML = `
                 <img src="${avatarSrc}" alt="${sender}" class="avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
@@ -301,13 +305,37 @@
             if (el) el.remove();
         }
 
-        function speakText(text) {
-            const cleanText = text.replace(/\*\*/g, "").replace(/<br>/g, ". ");
+        // 🔊 DAY 12 INTEGRATION: Robust Browser Native Text-to-Speech
+        function speakText(buttonElement) {
+            // 1. Stop any currently playing speech so they don't overlap
+            window.speechSynthesis.cancel();
+
+            // 2. Get the safe text from the button's data attribute
+            const rawText = buttonElement.getAttribute("data-text");
+            
+            // 3. Clean up any remaining HTML tags for pure speech
+            const cleanText = rawText.replace(/<[^>]*>/g, "").replace(/\*\*/g, "");
+
+            // 4. Create the speech utterance
             const utterance = new SpeechSynthesisUtterance(cleanText);
             utterance.rate = 1.0;
             utterance.pitch = 1.0;
+
+            // 5. (Optional but professional) Try to find a clear English voice
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(v => v.lang.includes('en-US') || v.lang.includes('en-GB'));
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+            }
+
+            // 6. Speak!
             window.speechSynthesis.speak(utterance);
         }
+
+        // Pre-load voices (fixes a known Chrome bug where voices load asynchronously)
+        window.speechSynthesis.onvoiceschanged = () => {
+            window.speechSynthesis.getVoices();
+        };
     </script>
-</body>
-</html>
+
+    
