@@ -61,6 +61,7 @@
             height: 100vh;
             border-left: 1px solid var(--border);
             border-right: 1px solid var(--border);
+            position: relative; /* Needed for absolute positioning of floating button */
         }
 
         .header {
@@ -88,17 +89,22 @@
             max-width: 600px;
         }
 
+        /* 🔗 HYPERLINKED LOGO STYLES */
+        .logo-link {
+            text-decoration: none;
+            display: block;
+            margin: 0 auto 1rem auto;
+            transition: transform 0.2s ease, filter 0.2s ease;
+        }
+        .logo-link:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+
         .company-logo {
             max-width: 140px;
             height: auto;
-            margin: 0 auto 1rem auto;
             display: block;
-            transition: transform 0.2s ease, filter 0.2s ease;
-        }
-        
-        .company-logo:hover {
-            transform: scale(1.05);
-            filter: brightness(1.1);
         }
 
         .header-controls {
@@ -337,6 +343,46 @@
         .send-btn:hover { background: var(--accent); }
         .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+        /* 📅 FLOATING BOOK CONSULTATION BUTTON (LEFT SIDE) */
+        .book-fab {
+            position: absolute;
+            bottom: 110px; /* Positioned just above the input area */
+            left: 20px;
+            background: var(--primary);
+            color: var(--primary-text);
+            border: none;
+            border-radius: 50px;
+            padding: 0.75rem 1.25rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+        .book-fab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+            background: var(--accent);
+        }
+
+        /* ⚠️ FOOTER DISCLAIMER */
+        .chat-footer {
+            padding: 0.75rem 2rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--muted-text);
+            border-top: 1px solid var(--border);
+            background: var(--card);
+            line-height: 1.4;
+        }
+        .chat-footer strong {
+            color: var(--text);
+        }
+
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -385,428 +431,33 @@
 
         /* 📱 MOBILE RESPONSIVE ADJUSTMENTS */
         @media (max-width: 768px) {
-            .header {
-                padding: 1.5rem 1.5rem;
-            }
-            .header h1 {
-                font-size: 1.75rem;
-            }
-            .header p {
-                font-size: 0.875rem;
-            }
-            .company-logo {
-                max-width: 100px;
-            }
+            .header { padding: 1.5rem 1.5rem; }
+            .header h1 { font-size: 1.75rem; }
+            .header p { font-size: 0.875rem; }
+            .company-logo { max-width: 100px; }
             .theme-toggle {
-                width: 42px;
-                height: 42px;
-                font-size: 1.25rem;
-                top: 1.5rem;
-                right: 1.5rem;
+                width: 42px; height: 42px; font-size: 1.25rem;
+                top: 1.5rem; right: 1.5rem;
             }
-            .messages {
-                padding: 1.5rem;
-                gap: 1.25rem;
+            .messages { padding: 1.5rem; gap: 1.25rem; }
+            .message { max-width: 95%; gap: 0.75rem; }
+            .avatar { width: 36px; height: 36px; font-size: 1.15rem; }
+            .bubble { padding: 1rem 1.25rem; font-size: 0.925rem; }
+            .chips-container { padding: 0 1.5rem 1rem; }
+            .chip { padding: 0.5rem 1rem; font-size: 0.85rem; }
+            .input-area { padding: 1.25rem 1.5rem; }
+            input { padding: 0.875rem 1rem 0.875rem 2.75rem; }
+            
+            /* Adjust floating button for mobile */
+            .book-fab {
+                bottom: 100px;
+                left: 15px;
+                padding: 0.6rem 1rem;
+                font-size: 0.8rem;
             }
-            .message {
-                max-width: 95%;
-                gap: 0.75rem;
-            }
-            .avatar {
-                width: 36px;
-                height: 36px;
-                font-size: 1.15rem;
-            }
-            .bubble {
-                padding: 1rem 1.25rem;
-                font-size: 0.925rem;
-            }
-            .chips-container {
-                padding: 0 1.5rem 1rem;
-            }
-            .chip {
-                padding: 0.5rem 1rem;
-                font-size: 0.85rem;
-            }
-            .input-area {
-                padding: 1.25rem 1.5rem;
-            }
-            input {
-                padding: 0.875rem 1rem 0.875rem 2.75rem;
-            }
+            .chat-footer { padding: 0.75rem 1rem; font-size: 0.7rem; }
         }
 
         @keyframes pulse-ring {
             0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(1.6); opacity: 0; }
-        }
-        @keyframes slide-up {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
-</head>
-<body>
-    <div class="chat-container">
-        <div class="header">
-            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme" id="themeBtn">🌙</button>
-            
-            <img src="/assets/logo.png" 
-                 alt="Outsource Development Studio Logo" 
-                 class="company-logo"
-                 onerror="this.style.display='none';">
-            
-            <h1>Nexa</h1>
-            <p>Ask anything about Outsource Development Studio's Services.</p>
-            
-            <div class="header-controls">
-                <div class="status">
-                    <span class="status-dot pulse-ring"></span>
-                    ONLINE
-                </div>
-                <button class="clear-btn" onclick="clearChat()">Clear Chat</button>
-            </div>
-        </div>
-
-        <div class="messages chat-scroll" id="messages">
-            <div class="message bot">
-                <img src="/assets/bot-avatar.png" 
-                     alt="Nexa Bot" 
-                     class="avatar"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                <div class="avatar" style="display:none;">🤖</div>
-                
-                <div class="bubble">Hello! I'm <strong>Nexa</strong>. I can help you with Outsource Dominica Studio's Services. What would you like to know?</div>
-            </div>
-        </div>
-
-        <div class="chips-container">
-            <div class="chips-label">Try asking:</div>
-            <div class="chips">
-                <button class="chip" onclick="send('What is BPO and how can it help my business?')">💼 What is BPO?</button>
-                <button class="chip" onclick="send('Tell me about recruitment and EOR services')">👥 Recruitment</button>
-                <button class="chip" onclick="send('What training seminars do you offer?')">🎓 UWI Training</button>
-                <button class="chip" onclick="send('What logistics services do you provide?')">🚚 Logistics</button>
-                <button class="chip" onclick="send('Tell me about resilience planning')">🌱 Resilience</button>
-                <button class="chip" onclick="openModal()">📅 Book Consultation</button>
-            </div>
-        </div>
-
-        <div class="input-area">
-            <div class="input-wrapper">
-                <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="Speak">🎙️</button>
-                <input type="text" id="input" placeholder="Message Nexa..." onkeypress="if(event.key==='Enter') sendMsg()">
-            </div>
-            <button class="send-btn" onclick="sendMsg()" id="sendBtn">Send</button>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="jotformModal" onclick="if(event.target===this) closeModal()">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>📅 Book a Consultation</h3>
-                <button class="close-modal" onclick="closeModal()">×</button>
-            </div>
-            <div class="modal-body">
-                <iframe src="https://form.jotform.com/262113198505050" title="Jotform Booking"></iframe>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const API_URL = "/chat"; 
-        let isListening = false;
-        let recognition;
-
-        // ============================================================================
-        // 📚 LOCAL KNOWLEDGE BASE (Works without API keys!)
-        // ============================================================================
-        // STUDENT NOTE: This is like a mini brain for the bot. When users click the 
-        // quick buttons, the bot answers instantly using these pre-written responses.
-        // Once we get the paid API keys tomorrow, the bot will also use Google Gemini
-        // for questions that aren't in this list!
-        // ============================================================================
-        
-        const localKnowledge = {
-            // 💼 BPO (Business Process Outsourcing)
-            "bpo": {
-                keywords: ["bpo", "outsourcing", "business process"],
-                response: "Business Process Outsourcing (BPO) is when a company hires experts to handle specific tasks like customer service, data entry, or administrative work. Outsource Development Studio helps businesses in Dominica and across the Caribbean streamline their operations, reduce costs, and focus on what they do best—growing their business! 💼"
-            },
-            
-            // 👥 Recruitment & EOR
-            "recruitment": {
-                keywords: ["recruitment", "hire", "talent", "eor", "employee"],
-                response: "Our recruitment services help you find the perfect talent for your team. We also offer Employer of Record (EOR) services, which means we can legally hire and manage employees on your behalf in Dominica—handling payroll, benefits, and compliance so you don't have to worry about the paperwork! 👥"
-            },
-            
-            // 🎓 UWI Cave Hill Training
-            "training": {
-                keywords: ["training", "seminar", "uwi", "cave hill", "course"],
-                response: "We partner with the UWI Cave Hill School of Business to offer quarterly corporate training seminars! These programs are designed to upskill your team in leadership, management, and business strategy. It's a unique offering that sets Outsource Development Studio apart from other consultancies. 🎓"
-            },
-            
-            // 🚚 Logistics
-            "logistics": {
-                keywords: ["logistics", "trucking", "import", "export", "supply chain"],
-                response: "Our logistics division handles trucking, import-export services, and supply chain management across Dominica. Whether you need to move goods locally or manage international shipments, we ensure your products get where they need to go—on time and efficiently! 🚚"
-            },
-            
-            // 🌱 Resilience & Sustainability
-            "resilience": {
-                keywords: ["resilience", "sustainability", "climate", "disaster"],
-                response: "We specialize in resilience and sustainability planning to help businesses prepare for climate challenges and natural disasters. Our team develops business continuity plans that keep your operations running smoothly, even when hurricanes or other disruptions hit. It's about building a future-proof business! 🌱"
-            },
-            
-            // 📊 Strategic Consulting
-            "consulting": {
-                keywords: ["consulting", "strategy", "advice", "consultation"],
-                response: "Our strategic consulting services provide one-on-one expert guidance to help your business grow. From market analysis to operational improvements, we work closely with you to develop actionable strategies. Ready to get started? Click 'Book Consultation' to schedule a meeting with our team! 📊"
-            },
-            
-            // 📅 Booking
-            "booking": {
-                keywords: ["book", "appointment", "consultation", "meeting", "schedule"],
-                response: "Great! To book a consultation, simply click the '📅 Book Consultation' button below, or I can open the booking form for you. Our team will get back to you within 24 hours to schedule your meeting! 📅"
-            },
-            
-            // 🏢 About the company
-            "about": {
-                keywords: ["about", "who are you", "company", "dominica"],
-                response: "Outsource Development Studio is a full-service consultancy based in Roseau, Dominica, with over 15 years of experience. We help businesses across the Caribbean with BPO, recruitment, training, logistics, resilience planning, and strategic consulting. Our mission is to empower businesses to grow sustainably and efficiently! 🏢"
-            }
-        };
-
-        // ============================================================================
-        // 🔍 FUNCTION TO CHECK LOCAL KNOWLEDGE BASE
-        // ============================================================================
-        // STUDENT NOTE: This function looks at what the user typed and checks if it 
-        // matches any keywords in our localKnowledge list. If it finds a match, it 
-        // returns the pre-written response. If not, it returns null and we'll use 
-        // the API instead!
-        // ============================================================================
-        
-        function checkLocalKnowledge(message) {
-            const lowerMessage = message.toLowerCase();
-            
-            for (const [key, data] of Object.entries(localKnowledge)) {
-                for (const keyword of data.keywords) {
-                    if (lowerMessage.includes(keyword)) {
-                        return data.response;
-                    }
-                }
-            }
-            
-            return null; // No match found, will use API
-        }
-
-        // ============================================================================
-        // 🌙 THEME TOGGLE
-        // ============================================================================
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            document.getElementById('themeBtn').textContent = isLight ? '☀️' : '🌙';
-            localStorage.setItem('nexa-theme', isLight ? 'light' : 'dark');
-        }
-        
-        if (localStorage.getItem('nexa-theme') === 'light') toggleTheme();
-
-        // ============================================================================
-        // 🎙️ SPEECH-TO-TEXT
-        // ============================================================================
-        if ('webkitSpeechRecognition' in window) {
-            recognition = new webkitSpeechRecognition();
-            recognition.continuous = false;
-            recognition.interimResults = false;
-            
-            recognition.onresult = (event) => {
-                document.getElementById("input").value = event.results[0][0].transcript;
-                toggleMic();
-                sendMsg();
-            };
-            
-            recognition.onerror = () => toggleMic();
-        }
-
-        function toggleMic() {
-            if (!recognition) { 
-                alert("Voice input not supported in this browser. Try Chrome or Edge!"); 
-                return; 
-            }
-            
-            const btn = document.getElementById("micBtn");
-            const input = document.getElementById("input");
-            
-            if (isListening) {
-                recognition.stop(); 
-                isListening = false;
-                btn.style.color = "var(--muted-text)";
-                input.style.borderColor = "var(--border)";
-                input.placeholder = "Message Nexa...";
-            } else {
-                recognition.start(); 
-                isListening = true;
-                btn.style.color = "var(--primary)";
-                input.style.borderColor = "var(--primary)";
-                input.placeholder = "Listening...";
-            }
-        }
-
-        // ============================================================================
-        // 📅 MODAL CONTROLS
-        // ============================================================================
-        function openModal() { 
-            document.getElementById("jotformModal").style.display = "flex"; 
-        }
-        
-        function closeModal() { 
-            document.getElementById("jotformModal").style.display = "none"; 
-        }
-
-        // ============================================================================
-        // ⚡ QUICK ACTION FUNCTIONS
-        // ============================================================================
-        function send(text) { 
-            document.getElementById("input").value = text; 
-            sendMsg(); 
-        }
-        
-        function clearChat() {
-            document.getElementById("messages").innerHTML = `
-                <div class="message bot">
-                    <img src="/assets/bot-avatar.png" 
-                         alt="Nexa Bot" 
-                         class="avatar"
-                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                    <div class="avatar" style="display:none;">🤖</div>
-                    <div class="bubble">Hello! I'm <strong>Nexa</strong>. I can help you with BPO, recruitment, UWI Cave Hill training seminars, logistics, resilience planning, and strategic consulting. What would you like to know?</div>
-                </div>`;
-        }
-
-        // ============================================================================
-        // 📤 SEND MESSAGE FUNCTION
-        // ============================================================================
-        async function sendMsg() {
-            const input = document.getElementById("input");
-            const msg = input.value.trim();
-            if (!msg) return;
-
-            addMessage(msg, "user");
-            input.value = "";
-            
-            const btn = document.getElementById("sendBtn");
-            btn.disabled = true; 
-            btn.innerHTML = "<span style='font-size:1.2rem'>⏳</span>";
-
-            const loadingId = addMessage("Thinking...", "bot", true);
-
-            // ========================================================================
-            // 🧠 SMART RESPONSE SYSTEM
-            // ========================================================================
-            // STUDENT NOTE: First, we check if the question is in our local knowledge 
-            // base (the quick buttons). If it is, we answer instantly! If not, we'll 
-            // try to use the API. If the API isn't ready yet (no paid keys), we give 
-            // a friendly fallback message.
-            // ========================================================================
-            
-            const localResponse = checkLocalKnowledge(msg);
-            
-            if (localResponse) {
-                // ✅ Found in local knowledge - answer instantly!
-                setTimeout(() => {
-                    removeMessage(loadingId);
-                    addMessage(localResponse, "bot", false);
-                    btn.disabled = false; 
-                    btn.textContent = "Send";
-                }, 800); // Small delay to look natural
-            } else {
-                // ❓ Not in local knowledge - try the API
-                try {
-                    const res = await fetch(API_URL, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ message: msg })
-                    });
-                    
-                    const data = await res.json();
-                    
-                    removeMessage(loadingId);
-                    addMessage(data.response, "bot", false);
-                    
-                } catch (err) {
-                    // 🛑 API not available yet - give a helpful fallback
-                    removeMessage(loadingId);
-                    addMessage("I'd love to help with that! For now, try clicking one of the quick buttons above to learn about our services, or click 'Book Consultation' to speak with our team directly. 🤖", "bot");
-                } finally {
-                    btn.disabled = false; 
-                    btn.textContent = "Send";
-                }
-            }
-        }
-
-        // ============================================================================
-        // 💬 ADD MESSAGE FUNCTION
-        // ============================================================================
-        function addMessage(text, sender, isLoading = false) {
-            const container = document.getElementById("messages");
-            const div = document.createElement("div");
-            div.className = `message ${sender}`;
-            const id = Date.now();
-            div.id = `msg-${id}`;
-            
-            const safeText = text.replace(/"/g, '&quot;').replace(/\n/g, ' ');
-            
-            const voiceBtn = (sender === "bot" && !isLoading) ? 
-                `<button class="voice-btn" onclick="speakText(this)" data-text="${safeText}" title="Listen">🔊</button>` : '';
-
-            const avatarImg = sender === "bot" ? "/assets/bot-avatar.png" : "/assets/user-avatar.png";
-            const fallbackEmoji = sender === "bot" ? "🤖" : "👤";
-
-            div.innerHTML = `
-                <img src="${avatarImg}" 
-                     alt="${sender} avatar" 
-                     class="avatar"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                <div class="avatar" style="display:none;">${fallbackEmoji}</div>
-                <div class="bubble" style="${isLoading ? 'opacity:0.6' : ''}">
-                    ${text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>")}
-                </div>
-                ${voiceBtn}
-            `;
-            
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-            return id;
-        }
-
-        function removeMessage(id) {
-            const el = document.getElementById(`msg-${id}`);
-            if (el) el.remove();
-        }
-
-        // ============================================================================
-        // 🔊 TEXT-TO-SPEECH FUNCTION
-        // ============================================================================
-        function speakText(buttonElement) {
-            window.speechSynthesis.cancel();
-            
-            const rawText = buttonElement.getAttribute("data-text");
-            const cleanText = rawText.replace(/<[^>]*>/g, "").replace(/\*\*/g, "");
-            
-            const utterance = new SpeechSynthesisUtterance(cleanText);
-            utterance.rate = 1.0;
-            
-            const voices = window.speechSynthesis.getVoices();
-            const preferredVoice = voices.find(v => v.lang.includes('en-US') || v.lang.includes('en-GB'));
-            if (preferredVoice) utterance.voice = preferredVoice;
-            
-            window.speechSynthesis.speak(utterance);
-        }
-        
-        window.speechSynthesis.onvoiceschanged = () => { 
-            window.speechSynthesis.getVoices(); 
-        };
-    </script>
-</body>
-</html>
+            100%
