@@ -1,192 +1,352 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nexa | Outsource Development Studio</title>
+    
+    <!-- 🎨 FIGMA FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
     <style>
-        /* 🎨 ODS BRAND COLORS + NISSY-STYLE CLEAN LAYOUT */
+        /* 🎨 FIGMA DESIGN TOKENS (Converted to Standard CSS) */
         :root {
-            --bg: #F9F9F9;           /* Client Off-White */
-            --surface: #FFFFFF;      /* Pure White for cards/bubbles */
-            --text: #000000;         /* Client Black */
-            --text-secondary: #6c7e7e; /* Client Slate Gray */
-            --accent: #a01919;       /* Client Deep Red */
-            --accent-hover: #801414; /* Darker Red for hover */
-            --border: #c0b8b9;       /* Client Light Gray */
-            --success: #16a34a;      /* Green for online status */
+            --bg: #0f0f0f;
+            --text: #f5f5f5;
+            --card: #1a1a1a;
+            --card-text: #f5f5f5;
+            --primary: #dc2626;
+            --primary-text: #ffffff;
+            --secondary: #2a2a2a;
+            --secondary-text: #d4d4d4;
+            --muted: #3a3a3a;
+            --muted-text: #9ca3af;
+            --accent: #ef4444;
+            --border: #2f2f2f;
+            --ring: #dc2626;
+            --radius: 0.5rem;
         }
 
-        /* Dark Mode Overrides (Toggleable) */
-        .dark-mode {
-            --bg: #0a0a0a;
-            --surface: #141414;
-            --text: #f0f0f0;
-            --text-secondary: #888888;
-            --border: #2a2a2a;
+        /* Light Mode Overrides */
+        .light-mode {
+            --bg: #ffffff;
+            --text: #0f0f0f;
+            --card: #f5f5f5;
+            --card-text: #0f0f0f;
+            --primary: #dc2626;
+            --primary-text: #ffffff;
+            --secondary: #e5e5e5;
+            --secondary-text: #333333;
+            --muted: #d4d4d4;
+            --muted-text: #666666;
+            --border: #e5e5e5;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            background: var(--bg); 
-            color: var(--text); 
-            display: flex; 
-            justify-content: center; 
-            min-height: 100vh; 
-            transition: background 0.3s ease, color 0.3s ease; 
-        }
 
-        /* Nissy-Style Centered Container */
-        .chat-container { 
-            width: 100%; max-width: 768px; display: flex; flex-direction: column; height: 100vh; 
+        body {
+            font-family: 'Inter', sans-serif;
             background: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            transition: background 0.3s ease, color 0.3s ease;
         }
-        
-        /* Clean Header */
-        .header { 
-            padding: 1.5rem 2rem; 
-            border-bottom: 1px solid var(--border); 
-            background: var(--surface);
-            display: flex; flex-direction: column; align-items: center; position: relative;
-            transition: background 0.3s ease, border-color 0.3s ease;
-        }
-        .header h1 { color: var(--text); font-size: 1.75rem; font-weight: 700; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.5rem; }
-        .header p { color: var(--text-secondary); font-size: 0.95rem; text-align: center; max-width: 500px; }
-        
-        .header-controls {
-            width: 100%; display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;
-        }
-        .status { color: var(--success); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.5px; display: flex; align-items: center; gap: 0.4rem; }
-        .status::before { content: ''; width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block; }
 
-        .clear-btn {
-            background: transparent; border: 1px solid var(--border); color: var(--text-secondary);
-            padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.85rem; cursor: pointer; transition: 0.2s;
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            border-left: 1px solid var(--border);
+            border-right: 1px solid var(--border);
         }
-        .clear-btn:hover { background: var(--bg); color: var(--text); border-color: var(--text-secondary); }
+
+        /* Header */
+        .header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--card);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        .header h1 {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 2rem;
+            color: var(--text);
+            margin-bottom: 0.25rem;
+        }
+        .header p {
+            color: var(--muted-text);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .header-controls {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+        .status {
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            position: relative;
+        }
+        .status-dot.pulse-ring::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            animation: pulse-ring 1.5s ease-out infinite;
+        }
+        .clear-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted-text);
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--radius);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .clear-btn:hover { background: var(--secondary); color: var(--text); }
 
         .theme-toggle {
-            position: absolute; top: 1.5rem; right: 1.5rem;
-            background: transparent; border: 1px solid var(--border);
-            color: var(--text); width: 36px; height: 36px; border-radius: 50%;
-            cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            color: var(--text);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: all 0.2s ease;
         }
-        .theme-toggle:hover { background: var(--bg); border-color: var(--accent); color: var(--accent); }
+        .theme-toggle:hover { border-color: var(--primary); color: var(--primary); }
 
         /* Messages Area */
-        .messages { 
-            flex: 1; overflow-y: auto; padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; 
-            scroll-behavior: smooth; 
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            scroll-behavior: smooth;
         }
-        .message { display: flex; gap: 1rem; max-width: 85%; animation: slideUp 0.3s ease; }
+        
+        /* Custom Scrollbar from Figma */
+        .messages::-webkit-scrollbar { width: 4px; }
+        .messages::-webkit-scrollbar-track { background: transparent; }
+        .messages::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 2px; }
+        .messages::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        .message {
+            display: flex;
+            gap: 1rem;
+            max-width: 85%;
+            animation: slide-up 0.25s ease forwards;
+        }
         .message.bot { align-self: flex-start; }
         .message.user { align-self: flex-end; flex-direction: row-reverse; }
-        
-        .avatar { 
-            width: 36px; height: 36px; border-radius: 50%; object-fit: cover; 
-            border: 1px solid var(--border); flex-shrink: 0; background: var(--surface);
-            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--card);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
         }
 
-        .bubble { 
-            background: var(--surface); padding: 1rem 1.25rem; border-radius: 12px; 
-            border: 1px solid var(--border); line-height: 1.6; font-size: 0.95rem;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            transition: background 0.3s ease, border-color 0.3s ease;
+        .bubble {
+            background: var(--card);
+            color: var(--card-text);
+            padding: 1rem 1.25rem;
+            border-radius: calc(var(--radius) * 2);
+            border: 1px solid var(--border);
+            line-height: 1.6;
+            font-size: 0.95rem;
         }
-        .user .bubble { 
-            background: var(--accent); color: #ffffff; border-color: var(--accent); 
+        .user .bubble {
+            background: var(--primary);
+            color: var(--primary-text);
+            border-color: var(--primary);
         }
-        
-        .voice-btn { background: none; border: none; font-size: 1rem; cursor: pointer; opacity: 0.5; transition: 0.2s; padding: 0.5rem; }
-        .voice-btn:hover { opacity: 1; color: var(--accent); }
 
-        /* Quick Action Chips (Nissy Style) */
+        .voice-btn {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: 0.2s;
+            padding: 0.5rem;
+        }
+        .voice-btn:hover { opacity: 1; color: var(--primary); }
+
+        /* Chips */
         .chips-container { padding: 0 2rem 1rem; }
-        .chips-label { color: var(--text-secondary); font-size: 0.85rem; font-weight: 500; margin-bottom: 0.75rem; }
+        .chips-label { color: var(--muted-text); font-size: 0.8rem; font-weight: 500; margin-bottom: 0.75rem; font-family: 'JetBrains Mono', monospace; }
         .chips { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-        .chip { 
-            background: var(--surface); border: 1px solid var(--border); color: var(--text); 
-            padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 500;
-            cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        .chip {
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
-        .chip:hover { background: var(--accent); color: #ffffff; border-color: var(--accent); transform: translateY(-1px); }
+        .chip:hover { background: var(--primary); color: var(--primary-text); border-color: var(--primary); transform: translateY(-1px); }
 
         /* Input Area */
-        .input-area { 
-            padding: 1.5rem 2rem; border-top: 1px solid var(--border); display: flex; gap: 0.75rem; 
-            background: var(--surface); align-items: center; 
-            transition: background 0.3s ease, border-color 0.3s ease;
+        .input-area {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 0.75rem;
+            background: var(--card);
+            align-items: center;
         }
-        .input-wrapper {
-            flex: 1; position: relative; display: flex; align-items: center;
-        }
+        .input-wrapper { flex: 1; position: relative; display: flex; align-items: center; }
         .mic-btn {
-            position: absolute; left: 0.75rem; background: none; border: none; font-size: 1.1rem; 
-            cursor: pointer; color: var(--text-secondary); transition: 0.2s; padding: 0.25rem;
+            position: absolute;
+            left: 0.75rem;
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            cursor: pointer;
+            color: var(--muted-text);
+            transition: 0.2s;
         }
-        .mic-btn:hover { color: var(--accent); }
+        .mic-btn:hover { color: var(--primary); }
         
-        input { 
-            width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); 
-            padding: 0.85rem 1rem 0.85rem 2.5rem; border-radius: 12px; font-size: 0.95rem; outline: none; 
-            transition: border-color 0.2s ease; 
+        input {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.85rem 1rem 0.85rem 2.5rem;
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s ease;
         }
-        input:focus { border-color: var(--accent); }
-        input::placeholder { color: var(--text-secondary); }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--ring); }
+        input::placeholder { color: var(--muted-text); }
         
-        .send-btn { 
-            background: var(--accent); color: #ffffff; border: none; padding: 0.85rem 1.25rem; border-radius: 12px; 
-            font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center;
+        .send-btn {
+            background: var(--primary);
+            color: var(--primary-text);
+            border: none;
+            padding: 0.85rem 1.25rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
         }
-        .send-btn:hover { background: var(--accent-hover); }
+        .send-btn:hover { background: var(--accent); }
         .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* Modal */
-        .modal-overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; 
-            z-index: 1000; backdrop-filter: blur(4px); 
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
         }
-        .modal-content { 
-            background: var(--surface); border: 1px solid var(--border); border-radius: 16px; 
-            width: 90%; max-width: 600px; height: 80vh; display: flex; flex-direction: column; overflow: hidden; 
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        .modal-content {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: calc(var(--radius) * 2);
+            width: 90%;
+            max-width: 600px;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
-        .modal-header { 
-            padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); 
-            display: flex; justify-content: space-between; align-items: center; 
+        .modal-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .modal-header h3 { margin: 0; color: var(--text); font-size: 1.1rem; }
-        .close-modal { 
-            background: none; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; line-height: 1;
+        .modal-header h3 { margin: 0; color: var(--text); font-family: 'Rajdhani', sans-serif; font-size: 1.25rem; }
+        .close-modal {
+            background: none; border: none; color: var(--muted-text); font-size: 1.5rem; cursor: pointer; line-height: 1;
         }
-        .close-modal:hover { color: var(--accent); }
+        .close-modal:hover { color: var(--primary); }
         .modal-body { flex: 1; }
         .modal-body iframe { width: 100%; height: 100%; border: none; }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .listening { animation: pulse 1.5s infinite; border-color: var(--accent) !important; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(160, 25, 25, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(160, 25, 25, 0); } 100% { box-shadow: 0 0 0 0 rgba(160, 25, 25, 0); } }
+        /* Animations from Figma */
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.6); opacity: 0; }
+        }
+        @keyframes slide-up {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
-    <div class="chat-container" id="chatContainer">
+    <div class="chat-container">
         <div class="header">
             <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme" id="themeBtn">🌙</button>
             <h1>🇩🇲 Nexa</h1>
             <p>Ask anything about Outsource Development Studio — BPO, recruitment, training, logistics, and more.</p>
             
             <div class="header-controls">
-                <div class="status">ONLINE</div>
+                <div class="status">
+                    <span class="status-dot pulse-ring"></span>
+                    ONLINE
+                </div>
                 <button class="clear-btn" onclick="clearChat()">Clear Chat</button>
-            </div it>
+            </div>
         </div>
 
-        <div class="messages" id="messages">
+        <div class="messages chat-scroll" id="messages">
             <div class="message bot">
                 <div class="avatar">🤖</div>
                 <div class="bubble">Hello! I'm <strong>Nexa</strong>. I can help you with BPO, recruitment, UWI Cave Hill training seminars, logistics, resilience planning, and strategic consulting. What would you like to know?</div>
@@ -220,7 +380,7 @@
                 <button class="close-modal" onclick="closeModal()">×</button>
             </div>
             <div class="modal-body">
-                <iframe src="https://form.jotform.com/262112347700850" title="Jotform Booking"></iframe>
+                <iframe src="https://form.jotform.com/262113198505050" title="Jotform Booking"></iframe>
             </div>
         </div>
     </div>
@@ -232,12 +392,12 @@
 
         // 🌙 THEME TOGGLE
         function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            document.getElementById('themeBtn').textContent = isDark ? '☀️' : '🌙';
-            localStorage.setItem('nexa-theme', isDark ? 'dark' : 'light');
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            document.getElementById('themeBtn').textContent = isLight ? '☀️' : '🌙';
+            localStorage.setItem('nexa-theme', isLight ? 'light' : 'dark');
         }
-        if (localStorage.getItem('nexa-theme') === 'dark') toggleTheme();
+        if (localStorage.getItem('nexa-theme') === 'light') toggleTheme();
 
         // 🎙️ SPEECH-TO-TEXT
         if ('webkitSpeechRecognition' in window) {
@@ -257,13 +417,13 @@
             const input = document.getElementById("input");
             if (isListening) {
                 recognition.stop(); isListening = false;
-                btn.style.color = "var(--text-secondary)";
-                input.classList.remove("listening");
+                btn.style.color = "var(--muted-text)";
+                input.style.borderColor = "var(--border)";
                 input.placeholder = "Message Nexa...";
             } else {
                 recognition.start(); isListening = true;
-                btn.style.color = "var(--accent)";
-                input.classList.add("listening");
+                btn.style.color = "var(--primary)";
+                input.style.borderColor = "var(--primary)";
                 input.placeholder = "Listening...";
             }
         }
