@@ -5,38 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nexa | Outsource Development Studio</title>
     
-    <!-- 🎨 FIGMA FONTS: We import these from Google Fonts so our text looks exactly like the design -->
-    <!-- JUDGE NOTE: We use standard Google Fonts instead of hosting them locally to keep the project footprint tiny -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <style>
-        /* ============================================================================
-           🎨 FIGMA DESIGN TOKENS (Converted to Standard CSS)
-           ============================================================================
-           STUDENT NOTE: These are like "variables" that store our colors. If we want 
-           to change the red accent color later, we only change it once here and the 
-           whole website updates automatically! This is called a "design system."
-           ============================================================================ */
         :root {
-            --bg: #0f0f0f;                    /* Main background (super dark) */
-            --text: #f5f5f5;                  /* Main text color (almost white) */
-            --card: #1a1a1a;                  /* Chat bubbles and cards */
-            --card-text: #f5f5f5;             /* Text inside cards */
-            --primary: #dc2626;               /* Main red accent (buttons, highlights) */
-            --primary-text: #ffffff;          /* Text on red buttons */
-            --secondary: #2a2a2a;             /* Secondary background */
-            --secondary-text: #d4d4d4;        /* Secondary text */
-            --muted: #3a3a3a;                 /* Muted/subtle elements */
-            --muted-text: #9ca3af;            /* Subtle text (placeholders, labels) */
-            --accent: #ef4444;                /* Brighter red for hover effects */
-            --border: #2f2f2f;                /* Border lines */
-            --ring: #dc2626;                  /* Focus ring color */
-            --radius: 0.5rem;                 /* Rounded corner size */
+            --bg: #0f0f0f;
+            --text: #f5f5f5;
+            --card: #1a1a1a;
+            --card-text: #f5f5f5;
+            --primary: #dc2626;
+            --primary-text: #ffffff;
+            --secondary: #2a2a2a;
+            --secondary-text: #d4d4d4;
+            --muted: #3a3a3a;
+            --muted-text: #9ca3af;
+            --accent: #ef4444;
+            --border: #2f2f2f;
+            --ring: #dc2626;
+            --radius: 0.5rem;
         }
 
-        /* 🌞 LIGHT MODE OVERRIDES: When the user clicks the sun icon, these colors replace the dark ones */
         .light-mode {
             --bg: #ffffff;
             --text: #0f0f0f;
@@ -51,41 +41,28 @@
             --border: #e5e5e5;
         }
 
-        /* ============================================================================
-           🏗️ BASE STYLES
-           ============================================================================ */
-        * { 
-            box-sizing: border-box;           /* Makes padding easier to calculate */
-            margin: 0; 
-            padding: 0; 
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Inter', sans-serif; /* Main font from Figma */
+            font-family: 'Inter', sans-serif;
             background: var(--bg);
             color: var(--text);
             display: flex;
-            justify-content: center;          /* Centers the chat container */
+            justify-content: center;
             min-height: 100vh;
-            transition: background 0.3s ease, color 0.3s ease; /* Smooth theme toggle */
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
-        /* ============================================================================
-           📦 CHAT CONTAINER (The main box that holds everything)
-           ============================================================================ */
         .chat-container {
             width: 100%;
-            max-width: 800px;                 /* Never wider than 800px (looks good on big screens) */
+            max-width: 800px;
             display: flex;
             flex-direction: column;
-            height: 100vh;                    /* Full height of the screen */
+            height: 100vh;
             border-left: 1px solid var(--border);
             border-right: 1px solid var(--border);
         }
 
-        /* ============================================================================
-           🔝 HEADER (Top section with logo, title, and status)
-           ============================================================================ */
         .header {
             padding: 1.5rem 2rem;
             border-bottom: 1px solid var(--border);
@@ -97,67 +74,44 @@
         }
         
         .header h1 {
-            font-family: 'Space Grotesk', sans-serif;  /* ✨ Heading font updated to Space Grotesk for a bold, modern look */
+            font-family: 'Rajdhani', sans-serif;
             font-weight: 700;
-            font-size: 3rem;                  /* 📈 INCREASED FONT SIZE (was 2rem) */
+            font-size: 2rem;
             color: var(--text);
             margin-bottom: 0.25rem;
         }
         
         .header p {
             color: var(--muted-text);
-            font-size: 1.15rem;               /* 📈 INCREASED FONT SIZE (was 0.9rem) */
+            font-size: 0.9rem;
             text-align: center;
         }
 
-        /* 🖼️ COMPANY LOGO STYLING */
         .company-logo {
-            max-width: 220px;                 /* 🖼️ LOGO SIZE: Increased from 120px to make it much larger and more prominent */
-            height: auto;                     /* Height adjusts automatically to keep proportions */
-            margin: 0 auto 0.5rem auto;       /* Centers it and adds space below */
+            max-width: 120px;
+            height: auto;
+            margin: 0 auto 0.5rem auto;
             display: block;
-            transition: transform 0.2s ease, filter 0.2s ease; /* Smooth hover effect */
-            
-            /* 🌙 DARK MODE LOGO FIX: 
-               In dark mode, the background is very dark (#1a1a1a). If the logo has black 
-               lines or dark colors, it becomes invisible! To fix this, we give the logo 
-               its own crisp white background box with some padding, ensuring it always 
-               stands out clearly regardless of the page theme.
-               STUDENT NOTE: Think of this like putting a picture in a white frame! */
-            background: #ffffff;
-            padding: 15px;
-            border-radius: 16px;
+            transition: transform 0.2s ease, filter 0.2s ease;
         }
         
-        /* STUDENT NOTE: This makes the logo grow slightly when you hover over it - a nice touch! */
         .company-logo:hover {
-            transform: scale(1.05);           /* Grows 5% bigger */
-            filter: brightness(1.1);          /* Gets slightly brighter */
-        }
-
-        /* 🌞 LIGHT MODE LOGO FIX:
-           In light mode, the page is already white, so the white "frame" around the logo 
-           looks weird. We set it to transparent and remove the padding so the logo sits 
-           directly on the page naturally. */
-        .light-mode .company-logo {
-            background: transparent;
-            padding: 0;
-            border-radius: 0;
+            transform: scale(1.05);
+            filter: brightness(1.1);
         }
 
         .header-controls {
             width: 100%;
             display: flex;
-            justify-content: space-between;   /* Pushes status to left, button to right */
+            justify-content: space-between;
             align-items: center;
             margin-top: 1rem;
         }
 
-        /* 🟢 ONLINE STATUS INDICATOR */
         .status {
             color: var(--accent);
-            font-family: 'JetBrains Mono', monospace;  /* Monospace font from Figma */
-            font-size: 0.85rem;               /* 📈 INCREASED FONT SIZE */
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
             font-weight: 500;
             display: flex;
             align-items: center;
@@ -169,11 +123,10 @@
             width: 8px;
             height: 8px;
             background: var(--accent);
-            border-radius: 50%;               /* Makes it a perfect circle */
+            border-radius: 50%;
             position: relative;
         }
         
-        /* 🔴 PULSING ANIMATION: Makes the online dot pulse like a heartbeat */
         .status-dot.pulse-ring::after {
             content: '';
             position: absolute;
@@ -187,9 +140,9 @@
             background: transparent;
             border: 1px solid var(--border);
             color: var(--muted-text);
-            padding: 0.5rem 1rem;             /* 📈 TALLER BUTTON */
+            padding: 0.4rem 0.8rem;
             border-radius: var(--radius);
-            font-size: 0.9rem;                /* 📈 INCREASED FONT SIZE */
+            font-size: 0.8rem;
             cursor: pointer;
             transition: 0.2s;
         }
@@ -198,65 +151,38 @@
             color: var(--text); 
         }
 
-        /* 🌙 THEME TOGGLE PILLBOX (Replaced circular button with a modern sliding switch) */
         .theme-toggle {
             position: absolute;
             top: 1.5rem;
             right: 1.5rem;
-            width: 64px;
-            height: 34px;
             background: var(--secondary);
             border: 1px solid var(--border);
-            border-radius: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            padding: 4px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .theme-toggle:hover {
-            border-color: var(--primary);
-        }
-        
-        .theme-toggle .toggle-thumb {
-            width: 24px;
-            height: 24px;
-            background: var(--text);
+            color: var(--text);
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.85rem;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s;
-            transform: translateX(0);
+            transition: all 0.2s ease;
+        }
+        .theme-toggle:hover { 
+            border-color: var(--primary); 
+            color: var(--primary); 
         }
 
-        /* 🌞 LIGHT MODE PILLBOX OVERRIDE: Slides the thumb to the right and changes track color */
-        .light-mode .theme-toggle {
-            background: var(--primary); 
-            border-color: var(--primary);
-        }
-
-        .light-mode .theme-toggle .toggle-thumb {
-            transform: translateX(30px); 
-            background: #ffffff;
-        }
-
-        /* ============================================================================
-           💬 MESSAGES AREA (Where the chat conversation appears)
-           ============================================================================ */
         .messages {
-            flex: 1;                          /* Takes up all remaining space */
-            overflow-y: auto;                 /* Adds scrollbar if messages overflow */
+            flex: 1;
+            overflow-y: auto;
             padding: 2rem;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;                      /* Space between messages */
-            scroll-behavior: smooth;          /* Smooth scrolling */
+            gap: 1.5rem;
+            scroll-behavior: smooth;
         }
         
-        /* 📜 CUSTOM SCROLLBAR (From Figma design) */
         .messages::-webkit-scrollbar { width: 4px; }
         .messages::-webkit-scrollbar-track { background: transparent; }
         .messages::-webkit-scrollbar-thumb { 
@@ -265,70 +191,62 @@
         }
         .messages::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-        /* 💭 INDIVIDUAL MESSAGE BUBBLE */
         .message {
             display: flex;
-            gap: 1.25rem;                     /* 📈 WIDER GAP to accommodate larger avatars */
-            max-width: 90%;                   /* 📈 SLIGHTLY WIDER to balance larger avatars */
-            animation: slide-up 0.25s ease forwards;  /* Slide-up animation from Figma */
+            gap: 1rem;
+            max-width: 85%;
+            animation: slide-up 0.25s ease forwards;
         }
-        .message.bot { align-self: flex-start; }      /* Bot messages on the left */
-        .message.user { align-self: flex-end; flex-direction: row-reverse; }  /* User messages on the right */
+        .message.bot { align-self: flex-start; }
+        .message.user { align-self: flex-end; flex-direction: row-reverse; }
 
-        /* 👤 AVATAR (Bot and User icons) */
         .avatar {
-            width: 72px;                      /* 📈 DOUBLED ICON SIZE (was 36px) */
-            height: 72px;
-            border-radius: 50%;               /* Makes it circular */
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
             background: var(--card);
             border: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.2rem;                /* 📈 Scaled up fallback emojis */
-            flex-shrink: 0;                   /* Prevents shrinking */
-            object-fit: cover;                /* Makes images fill the circle nicely */
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            object-fit: cover;
         }
 
-        /* 💬 CHAT BUBBLE */
         .bubble {
             background: var(--card);
             color: var(--card-text);
-            padding: 1.25rem 1.5rem;          /* 📈 LARGER PADDING for larger text/avatars */
-            border-radius: calc(var(--radius) * 2);  /* Double the radius for softer corners */
+            padding: 1rem 1.25rem;
+            border-radius: calc(var(--radius) * 2);
             border: 1px solid var(--border);
             line-height: 1.6;
-            font-size: 1.1rem;                /* 📈 INCREASED FONT SIZE (was 0.95rem) */
+            font-size: 0.95rem;
         }
         .user .bubble {
-            background: var(--primary);       /* User bubbles are red */
+            background: var(--primary);
             color: var(--primary-text);
             border-color: var(--primary);
         }
 
-        /* 🔊 VOICE BUTTON (Speaker icon) */
         .voice-btn {
             background: none;
             border: none;
-            font-size: 1.2rem;                /* 📈 LARGER ICON */
+            font-size: 1rem;
             cursor: pointer;
             opacity: 0.5;
             transition: 0.2s;
             padding: 0.5rem;
-            align-self: center;               /* Centers vertically next to the larger bubble */
         }
         .voice-btn:hover { 
             opacity: 1; 
             color: var(--primary); 
         }
 
-        /* ============================================================================
-           ⚡ QUICK ACTION CHIPS (Suggested questions)
-           ============================================================================ */
         .chips-container { padding: 0 2rem 1rem; }
         .chips-label { 
             color: var(--muted-text); 
-            font-size: 0.9rem;                /* 📈 INCREASED FONT SIZE */
+            font-size: 0.8rem; 
             font-weight: 500; 
             margin-bottom: 0.75rem; 
             font-family: 'JetBrains Mono', monospace; 
@@ -336,15 +254,15 @@
         .chips { 
             display: flex; 
             gap: 0.5rem; 
-            flex-wrap: wrap;                  /* Wraps to next line if too many */
+            flex-wrap: wrap; 
         }
         .chip {
             background: var(--card);
             border: 1px solid var(--border);
             color: var(--text);
-            padding: 0.6rem 1.2rem;           /* 📈 TALLER PILL */
-            border-radius: 20px;              /* Pill shape */
-            font-size: 0.95rem;               /* 📈 INCREASED FONT SIZE */
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -353,12 +271,9 @@
             background: var(--primary); 
             color: var(--primary-text); 
             border-color: var(--primary); 
-            transform: translateY(-1px);      /* Lifts up slightly */
+            transform: translateY(-1px);
         }
 
-        /* ============================================================================
-           ⌨️ INPUT AREA (Where users type messages)
-           ============================================================================ */
         .input-area {
             padding: 1.5rem 2rem;
             border-top: 1px solid var(--border);
@@ -374,13 +289,12 @@
             align-items: center; 
         }
         
-        /* 🎙️ MICROPHONE BUTTON */
         .mic-btn {
             position: absolute;
             left: 0.75rem;
             background: none;
             border: none;
-            font-size: 1.3rem;                /* 📈 LARGER ICON */
+            font-size: 1.1rem;
             cursor: pointer;
             color: var(--muted-text);
             transition: 0.2s;
@@ -392,36 +306,31 @@
             background: var(--bg);
             border: 1px solid var(--border);
             color: var(--text);
-            padding: 1.1rem 1rem 1.1rem 3.2rem;  /* 📈 TALLER INPUT for larger text */
+            padding: 0.85rem 1rem 0.85rem 2.5rem;
             border-radius: var(--radius);
-            font-size: 1.05rem;               /* 📈 INCREASED FONT SIZE */
+            font-size: 0.95rem;
             outline: none;
             transition: border-color 0.2s ease;
         }
         input:focus { 
             border-color: var(--primary); 
-            box-shadow: 0 0 0 2px var(--ring);  /* Red glow when typing */
+            box-shadow: 0 0 0 2px var(--ring);
         }
         input::placeholder { color: var(--muted-text); }
         
-        /* 📤 SEND BUTTON */
         .send-btn {
             background: var(--primary);
             color: var(--primary-text);
             border: none;
-            padding: 1.1rem 1.5rem;           /* 📈 TALLER BUTTON */
+            padding: 0.85rem 1.25rem;
             border-radius: var(--radius);
             font-weight: 600;
-            font-size: 1.05rem;               /* 📈 INCREASED FONT SIZE */
             cursor: pointer;
             transition: 0.2s;
         }
         .send-btn:hover { background: var(--accent); }
         .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* ============================================================================
-           📅 JOTFORM MODAL (Popup for booking consultations)
-           ============================================================================ */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -429,8 +338,8 @@
             display: none;
             align-items: center;
             justify-content: center;
-            z-index: 1000;                    /* Always on top */
-            backdrop-filter: blur(4px);       /* Blurry background effect */
+            z-index: 1000;
+            backdrop-filter: blur(4px);
         }
         .modal-content {
             background: var(--card);
@@ -454,7 +363,7 @@
             margin: 0; 
             color: var(--text); 
             font-family: 'Rajdhani', sans-serif; 
-            font-size: 1.35rem;               /* 📈 INCREASED FONT SIZE */
+            font-size: 1.25rem; 
         }
         .close-modal {
             background: none; 
@@ -468,9 +377,6 @@
         .modal-body { flex: 1; }
         .modal-body iframe { width: 100%; height: 100%; border: none; }
 
-        /* ============================================================================
-           🎬 ANIMATIONS (From Figma design)
-           ============================================================================ */
         @keyframes pulse-ring {
             0% { transform: scale(1); opacity: 1; }
             100% { transform: scale(1.6); opacity: 0; }
@@ -483,29 +389,16 @@
 </head>
 <body>
     <div class="chat-container">
-        <!-- ========================================================================
-             🔝 HEADER SECTION
-             ======================================================================== -->
         <div class="header">
-            <!-- ✨ NEW PILLBOX THEME TOGGLE -->
-            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme" id="themeBtn" aria-label="Toggle Dark/Light Mode">
-                <span class="toggle-thumb" id="themeIcon">🌙</span>
-            </button>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme" id="themeBtn">🌙</button>
             
-            <!-- 🖼️ COMPANY LOGO -->
-            <!-- STUDENT NOTE: This loads our company logo from the assets folder.
-                 We use max-width so it never gets too big, and height:auto keeps 
-                 the proportions perfect. The onerror is a safety net - if the image 
-                 is missing, it hides the broken icon instead of showing an ugly box! -->
             <img src="/assets/logo.png" 
                  alt="Outsource Development Studio Logo" 
                  class="company-logo"
                  onerror="this.style.display='none';">
             
-            <!-- ✨ NEW TITLE: Only "Nexa" in bold Space Grotesk font. Removed "DM" for cleaner branding -->
-            <h1>Nexa</h1>
-            <!-- ✨ NEW SUBTITLE: Replaced long description with a punchy, professional tagline -->
-            <p>Your Operations Optimized</p>
+            <h1>🇩🇲 Nexa</h1>
+            <p>Ask anything about Outsource Development Studio — BPO, recruitment, training, logistics, and more.</p>
             
             <div class="header-controls">
                 <div class="status">
@@ -516,16 +409,8 @@
             </div>
         </div>
 
-        <!-- ========================================================================
-             💬 MESSAGES AREA (Where the conversation appears)
-             ======================================================================== -->
         <div class="messages chat-scroll" id="messages">
-            <!-- WELCOME MESSAGE FROM THE BOT -->
             <div class="message bot">
-                <!-- 🖼️ BOT AVATAR -->
-                <!-- STUDENT NOTE: We try to load the custom bot avatar from Figma.
-                     If it fails (maybe the file is missing), we hide the broken image
-                     and show the 🤖 emoji instead. This way the app never looks broken! -->
                 <img src="/assets/bot-avatar.png" 
                      alt="Nexa Bot" 
                      class="avatar"
@@ -536,36 +421,27 @@
             </div>
         </div>
 
-        <!-- ========================================================================
-             ⚡ QUICK ACTION CHIPS (Suggested questions users can click)
-             ======================================================================== -->
         <div class="chips-container">
             <div class="chips-label">Try asking:</div>
             <div class="chips">
-                <button class="chip" onclick="send('What is BPO and how can it help my business?')">What is BPO?</button>
-                <button class="chip" onclick="send('Tell me about the UWI Cave Hill training seminars')">UWI Seminars</button>
-                <button class="chip" onclick="openModal()">Book a Consultation</button>
-                <button class="chip" onclick="send('What recruitment and EOR services do you offer?')">Recruitment & EOR</button>
+                <button class="chip" onclick="send('What is BPO and how can it help my business?')">💼 What is BPO?</button>
+                <button class="chip" onclick="send('Tell me about recruitment and EOR services')">👥 Recruitment</button>
+                <button class="chip" onclick="send('What training seminars do you offer?')">🎓 UWI Training</button>
+                <button class="chip" onclick="send('What logistics services do you provide?')">🚚 Logistics</button>
+                <button class="chip" onclick="send('Tell me about resilience planning')">🌱 Resilience</button>
+                <button class="chip" onclick="openModal()">📅 Book Consultation</button>
             </div>
         </div>
 
-        <!-- ========================================================================
-             ⌨️ INPUT AREA (Where users type their messages)
-             ======================================================================== -->
         <div class="input-area">
             <div class="input-wrapper">
-                <!-- 🎙️ MICROPHONE BUTTON (Voice-to-text) -->
                 <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="Speak">🎙️</button>
                 <input type="text" id="input" placeholder="Message Nexa..." onkeypress="if(event.key==='Enter') sendMsg()">
             </div>
-            <!-- 📤 SEND BUTTON -->
             <button class="send-btn" onclick="sendMsg()" id="sendBtn">Send</button>
         </div>
     </div>
 
-    <!-- ========================================================================
-         📅 JOTFORM MODAL (Popup for booking consultations)
-         ======================================================================== -->
     <div class="modal-overlay" id="jotformModal" onclick="if(event.target===this) closeModal()">
         <div class="modal-content">
             <div class="modal-header">
@@ -573,57 +449,122 @@
                 <button class="close-modal" onclick="closeModal()">×</button>
             </div>
             <div class="modal-body">
-                <!-- STUDENT NOTE: This iframe loads the Jotform booking page inside our app.
-                     Users can fill out the form without leaving the chatbot! -->
                 <iframe src="https://form.jotform.com/262113198505050" title="Jotform Booking"></iframe>
             </div>
         </div>
     </div>
 
-    <!-- ========================================================================
-         🧠 JAVASCRIPT (The brain that makes everything work)
-         ========================================================================
-         STUDENT NOTE: This is where all the magic happens! The HTML is the skeleton,
-         the CSS is the skin, and JavaScript is the muscles that make it move and think.
-         ======================================================================== -->
     <script>
-        // 🔗 API URL: This tells the frontend where to find the backend (Python brain)
-        // Since we're using Option A (all-in-one), it's just "/chat" on the same server!
         const API_URL = "/chat"; 
-        
         let isListening = false;
         let recognition;
 
-        // ========================================================================
-        // 🌙 THEME TOGGLE (Dark/Light mode pillbox switch)
-        // ========================================================================
+        // ============================================================================
+        // 📚 LOCAL KNOWLEDGE BASE (Works without API keys!)
+        // ============================================================================
+        // STUDENT NOTE: This is like a mini brain for the bot. When users click the 
+        // quick buttons, the bot answers instantly using these pre-written responses.
+        // Once we get the paid API keys tomorrow, the bot will also use Google Gemini
+        // for questions that aren't in this list!
+        // ============================================================================
+        
+        const localKnowledge = {
+            // 💼 BPO (Business Process Outsourcing)
+            "bpo": {
+                keywords: ["bpo", "outsourcing", "business process"],
+                response: "Business Process Outsourcing (BPO) is when a company hires experts to handle specific tasks like customer service, data entry, or administrative work. Outsource Development Studio helps businesses in Dominica and across the Caribbean streamline their operations, reduce costs, and focus on what they do best—growing their business! 💼"
+            },
+            
+            // 👥 Recruitment & EOR
+            "recruitment": {
+                keywords: ["recruitment", "hire", "talent", "eor", "employee"],
+                response: "Our recruitment services help you find the perfect talent for your team. We also offer Employer of Record (EOR) services, which means we can legally hire and manage employees on your behalf in Dominica—handling payroll, benefits, and compliance so you don't have to worry about the paperwork! 👥"
+            },
+            
+            // 🎓 UWI Cave Hill Training
+            "training": {
+                keywords: ["training", "seminar", "uwi", "cave hill", "course"],
+                response: "We partner with the UWI Cave Hill School of Business to offer quarterly corporate training seminars! These programs are designed to upskill your team in leadership, management, and business strategy. It's a unique offering that sets Outsource Development Studio apart from other consultancies. 🎓"
+            },
+            
+            // 🚚 Logistics
+            "logistics": {
+                keywords: ["logistics", "trucking", "import", "export", "supply chain"],
+                response: "Our logistics division handles trucking, import-export services, and supply chain management across Dominica. Whether you need to move goods locally or manage international shipments, we ensure your products get where they need to go—on time and efficiently! 🚚"
+            },
+            
+            // 🌱 Resilience & Sustainability
+            "resilience": {
+                keywords: ["resilience", "sustainability", "climate", "disaster"],
+                response: "We specialize in resilience and sustainability planning to help businesses prepare for climate challenges and natural disasters. Our team develops business continuity plans that keep your operations running smoothly, even when hurricanes or other disruptions hit. It's about building a future-proof business! 🌱"
+            },
+            
+            // 📊 Strategic Consulting
+            "consulting": {
+                keywords: ["consulting", "strategy", "advice", "consultation"],
+                response: "Our strategic consulting services provide one-on-one expert guidance to help your business grow. From market analysis to operational improvements, we work closely with you to develop actionable strategies. Ready to get started? Click 'Book Consultation' to schedule a meeting with our team! 📊"
+            },
+            
+            // 📅 Booking
+            "booking": {
+                keywords: ["book", "appointment", "consultation", "meeting", "schedule"],
+                response: "Great! To book a consultation, simply click the '📅 Book Consultation' button below, or I can open the booking form for you. Our team will get back to you within 24 hours to schedule your meeting! 📅"
+            },
+            
+            // 🏢 About the company
+            "about": {
+                keywords: ["about", "who are you", "company", "dominica"],
+                response: "Outsource Development Studio is a full-service consultancy based in Roseau, Dominica, with over 15 years of experience. We help businesses across the Caribbean with BPO, recruitment, training, logistics, resilience planning, and strategic consulting. Our mission is to empower businesses to grow sustainably and efficiently! 🏢"
+            }
+        };
+
+        // ============================================================================
+        // 🔍 FUNCTION TO CHECK LOCAL KNOWLEDGE BASE
+        // ============================================================================
+        // STUDENT NOTE: This function looks at what the user typed and checks if it 
+        // matches any keywords in our localKnowledge list. If it finds a match, it 
+        // returns the pre-written response. If not, it returns null and we'll use 
+        // the API instead!
+        // ============================================================================
+        
+        function checkLocalKnowledge(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            for (const [key, data] of Object.entries(localKnowledge)) {
+                for (const keyword of data.keywords) {
+                    if (lowerMessage.includes(keyword)) {
+                        return data.response;
+                    }
+                }
+            }
+            
+            return null; // No match found, will use API
+        }
+
+        // ============================================================================
+        // 🌙 THEME TOGGLE
+        // ============================================================================
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
             const isLight = document.body.classList.contains('light-mode');
-            // Update the icon inside the sliding pill thumb
-            document.getElementById('themeIcon').textContent = isLight ? '☀️' : '🌙';
-            // Save the user's choice so it remembers next time they visit
+            document.getElementById('themeBtn').textContent = isLight ? '☀️' : '🌙';
             localStorage.setItem('nexa-theme', isLight ? 'light' : 'dark');
         }
         
-        // Load saved theme when page loads
         if (localStorage.getItem('nexa-theme') === 'light') toggleTheme();
 
-        // ========================================================================
-        // 🎙️ SPEECH-TO-TEXT (Voice input)
-        // ========================================================================
-        // STUDENT NOTE: This uses the browser's built-in voice recognition.
-        // It's free and works in Chrome, Edge, and Safari!
+        // ============================================================================
+        // 🎙️ SPEECH-TO-TEXT
+        // ============================================================================
         if ('webkitSpeechRecognition' in window) {
             recognition = new webkitSpeechRecognition();
             recognition.continuous = false;
             recognition.interimResults = false;
             
-            // When the user finishes speaking, put their words in the input box
             recognition.onresult = (event) => {
                 document.getElementById("input").value = event.results[0][0].transcript;
-                toggleMic();  // Stop listening
-                sendMsg();    // Auto-send the message
+                toggleMic();
+                sendMsg();
             };
             
             recognition.onerror = () => toggleMic();
@@ -639,14 +580,12 @@
             const input = document.getElementById("input");
             
             if (isListening) {
-                // Stop listening
                 recognition.stop(); 
                 isListening = false;
                 btn.style.color = "var(--muted-text)";
                 input.style.borderColor = "var(--border)";
                 input.placeholder = "Message Nexa...";
             } else {
-                // Start listening
                 recognition.start(); 
                 isListening = true;
                 btn.style.color = "var(--primary)";
@@ -655,9 +594,9 @@
             }
         }
 
-        // ========================================================================
-        // 📅 MODAL CONTROLS (Open/Close the Jotform popup)
-        // ========================================================================
+        // ============================================================================
+        // 📅 MODAL CONTROLS
+        // ============================================================================
         function openModal() { 
             document.getElementById("jotformModal").style.display = "flex"; 
         }
@@ -666,16 +605,15 @@
             document.getElementById("jotformModal").style.display = "none"; 
         }
 
-        // ========================================================================
+        // ============================================================================
         // ⚡ QUICK ACTION FUNCTIONS
-        // ========================================================================
+        // ============================================================================
         function send(text) { 
             document.getElementById("input").value = text; 
             sendMsg(); 
         }
         
         function clearChat() {
-            // Reset the chat back to the welcome message
             document.getElementById("messages").innerHTML = `
                 <div class="message bot">
                     <img src="/assets/bot-avatar.png" 
@@ -687,77 +625,85 @@
                 </div>`;
         }
 
-        // ========================================================================
-        // 📤 SEND MESSAGE FUNCTION (The main function that talks to the backend)
-        // ========================================================================
-        // JUDGE NOTE: This handles the entire network request loop using modern async/await 
-        // syntax to keep the UI responsive while waiting for the backend Python logic.
+        // ============================================================================
+        // 📤 SEND MESSAGE FUNCTION
+        // ============================================================================
         async function sendMsg() {
             const input = document.getElementById("input");
             const msg = input.value.trim();
-            if (!msg) return;  // Don't send empty messages
+            if (!msg) return;
 
-            // 1. Show the user's message in the chat
             addMessage(msg, "user");
-            input.value = "";  // Clear the input box
+            input.value = "";
             
-            // 2. Disable the send button and show loading
             const btn = document.getElementById("sendBtn");
             btn.disabled = true; 
-            btn.innerHTML = "<span style='font-size:1.4rem'>⏳</span>"; // 📈 LARGER LOADING ICON
+            btn.innerHTML = "<span style='font-size:1.2rem'>⏳</span>";
 
-            // 3. Show "Thinking..." message
             const loadingId = addMessage("Thinking...", "bot", true);
 
-            try {
-                // 4. Send the message to the Python backend
-                const res = await fetch(API_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ message: msg })
-                });
-                
-                const data = await res.json();
-                
-                // 5. Remove "Thinking..." and show the real response
-                removeMessage(loadingId);
-                addMessage(data.response, "bot", false);
-                
-            } catch (err) {
-                // 6. If something goes wrong, show a friendly error
-                removeMessage(loadingId);
-                addMessage("😅 Oops! Connection error. Please try again.", "bot");
-            } finally {
-                // 7. Re-enable the send button
-                btn.disabled = false; 
-                btn.textContent = "Send";
+            // ========================================================================
+            // 🧠 SMART RESPONSE SYSTEM
+            // ========================================================================
+            // STUDENT NOTE: First, we check if the question is in our local knowledge 
+            // base (the quick buttons). If it is, we answer instantly! If not, we'll 
+            // try to use the API. If the API isn't ready yet (no paid keys), we give 
+            // a friendly fallback message.
+            // ========================================================================
+            
+            const localResponse = checkLocalKnowledge(msg);
+            
+            if (localResponse) {
+                // ✅ Found in local knowledge - answer instantly!
+                setTimeout(() => {
+                    removeMessage(loadingId);
+                    addMessage(localResponse, "bot", false);
+                    btn.disabled = false; 
+                    btn.textContent = "Send";
+                }, 800); // Small delay to look natural
+            } else {
+                // ❓ Not in local knowledge - try the API
+                try {
+                    const res = await fetch(API_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ message: msg })
+                    });
+                    
+                    const data = await res.json();
+                    
+                    removeMessage(loadingId);
+                    addMessage(data.response, "bot", false);
+                    
+                } catch (err) {
+                    // 🛑 API not available yet - give a helpful fallback
+                    removeMessage(loadingId);
+                    addMessage("I'd love to help with that! For now, try clicking one of the quick buttons above to learn about our services, or click 'Book Consultation' to speak with our team directly. 🤖", "bot");
+                } finally {
+                    btn.disabled = false; 
+                    btn.textContent = "Send";
+                }
             }
         }
 
-        // ========================================================================
-        // 💬 ADD MESSAGE FUNCTION (Creates a new message bubble in the chat)
-        // ========================================================================
+        // ============================================================================
+        // 💬 ADD MESSAGE FUNCTION
+        // ============================================================================
         function addMessage(text, sender, isLoading = false) {
             const container = document.getElementById("messages");
             const div = document.createElement("div");
             div.className = `message ${sender}`;
-            const id = Date.now();  // Unique ID for this message
+            const id = Date.now();
             div.id = `msg-${id}`;
             
-            // Convert special characters so they don't break the HTML
             const safeText = text.replace(/"/g, '&quot;').replace(/\n/g, ' ');
             
-            // 🔊 Add voice button for bot messages (not for loading messages)
             const voiceBtn = (sender === "bot" && !isLoading) ? 
                 `<button class="voice-btn" onclick="speakText(this)" data-text="${safeText}" title="Listen">🔊</button>` : '';
 
-            // 🖼️ CHOOSE THE RIGHT AVATAR
-            // STUDENT NOTE: We check if the message is from the bot or the user,
-            // then load the correct custom avatar from our assets folder!
             const avatarImg = sender === "bot" ? "/assets/bot-avatar.png" : "/assets/user-avatar.png";
             const fallbackEmoji = sender === "bot" ? "🤖" : "👤";
 
-            // Build the HTML for this message
             div.innerHTML = `
                 <img src="${avatarImg}" 
                      alt="${sender} avatar" 
@@ -771,7 +717,7 @@
             `;
             
             container.appendChild(div);
-            container.scrollTop = container.scrollHeight;  // Auto-scroll to bottom
+            container.scrollTop = container.scrollHeight;
             return id;
         }
 
@@ -780,35 +726,25 @@
             if (el) el.remove();
         }
 
-        // ========================================================================
-        // 🔊 TEXT-TO-SPEECH FUNCTION (Makes the bot speak out loud)
-        // ========================================================================
-        // STUDENT NOTE: This uses the browser's built-in text-to-speech.
-        // It's free and works in all modern browsers!
+        // ============================================================================
+        // 🔊 TEXT-TO-SPEECH FUNCTION
+        // ============================================================================
         function speakText(buttonElement) {
-            // Stop any currently playing speech
             window.speechSynthesis.cancel();
             
-            // Get the text from the button's data attribute
             const rawText = buttonElement.getAttribute("data-text");
-            
-            // Clean up HTML tags so it sounds natural
             const cleanText = rawText.replace(/<[^>]*>/g, "").replace(/\*\*/g, "");
             
-            // Create the speech
             const utterance = new SpeechSynthesisUtterance(cleanText);
             utterance.rate = 1.0;
             
-            // Try to find a clear English voice
             const voices = window.speechSynthesis.getVoices();
             const preferredVoice = voices.find(v => v.lang.includes('en-US') || v.lang.includes('en-GB'));
             if (preferredVoice) utterance.voice = preferredVoice;
             
-            // Speak!
             window.speechSynthesis.speak(utterance);
         }
         
-        // Pre-load voices (fixes a Chrome bug)
         window.speechSynthesis.onvoiceschanged = () => { 
             window.speechSynthesis.getVoices(); 
         };
