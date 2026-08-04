@@ -61,7 +61,6 @@
             height: 100vh;
             border-left: 1px solid var(--border);
             border-right: 1px solid var(--border);
-            position: relative; /* Needed for absolute positioning of floating button */
         }
 
         .header {
@@ -110,9 +109,10 @@
         .header-controls {
             width: 100%;
             display: flex;
-            justify-content: space-between;
+            justify-content: center; /* Centers the three items nicely */
             align-items: center;
             margin-top: 1.5rem;
+            gap: 1.5rem; /* Space between the status, book button, and clear button */
         }
 
         .status {
@@ -141,6 +141,26 @@
             border-radius: 50%;
             border: 2px solid var(--accent);
             animation: pulse-ring 1.5s ease-out infinite;
+        }
+
+        /* 📅 HEADER BOOK CONSULTATION BUTTON */
+        .book-header-btn {
+            background: var(--primary);
+            color: var(--primary-text);
+            border: none;
+            padding: 0.5rem 1.25rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .book-header-btn:hover {
+            background: var(--accent);
+            transform: translateY(-1px);
         }
 
         .clear-btn {
@@ -343,32 +363,6 @@
         .send-btn:hover { background: var(--accent); }
         .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* 📅 FLOATING BOOK CONSULTATION BUTTON (LEFT SIDE) */
-        .book-fab {
-            position: absolute;
-            bottom: 110px; /* Positioned just above the input area */
-            left: 20px;
-            background: var(--primary);
-            color: var(--primary-text);
-            border: none;
-            border-radius: 50px;
-            padding: 0.75rem 1.25rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-            transition: all 0.2s ease;
-            z-index: 10;
-        }
-        .book-fab:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
-            background: var(--accent);
-        }
-
         /* ⚠️ FOOTER DISCLAIMER */
         .chat-footer {
             padding: 0.75rem 2rem;
@@ -439,6 +433,10 @@
                 width: 42px; height: 42px; font-size: 1.25rem;
                 top: 1.5rem; right: 1.5rem;
             }
+            .header-controls {
+                flex-wrap: wrap;
+                gap: 0.75rem;
+            }
             .messages { padding: 1.5rem; gap: 1.25rem; }
             .message { max-width: 95%; gap: 0.75rem; }
             .avatar { width: 36px; height: 36px; font-size: 1.15rem; }
@@ -447,14 +445,6 @@
             .chip { padding: 0.5rem 1rem; font-size: 0.85rem; }
             .input-area { padding: 1.25rem 1.5rem; }
             input { padding: 0.875rem 1rem 0.875rem 2.75rem; }
-            
-            /* Adjust floating button for mobile */
-            .book-fab {
-                bottom: 100px;
-                left: 15px;
-                padding: 0.6rem 1rem;
-                font-size: 0.8rem;
-            }
             .chat-footer { padding: 0.75rem 1rem; font-size: 0.7rem; }
         }
 
@@ -489,6 +479,12 @@
                     <span class="status-dot pulse-ring"></span>
                     ONLINE
                 </div>
+                
+                <!-- 📅 BOOK CONSULTATION BUTTON (Between Online and Clear Chat) -->
+                <button class="book-header-btn" onclick="openModal()">
+                    📅 Book Consultation
+                </button>
+                
                 <button class="clear-btn" onclick="clearChat()">Clear Chat</button>
             </div>
         </div>
@@ -504,11 +500,6 @@
                 <div class="bubble">Hello! I'm <strong>Nexa</strong>. I can help you with Outsource Development Studio's Services. What would you like to know?</div>
             </div>
         </div>
-
-        <!-- 📅 FLOATING BOOK CONSULTATION BUTTON (LEFT SIDE) -->
-        <button class="book-fab" onclick="openModal()">
-            📅 Book Consultation
-        </button>
 
         <div class="chips-container">
             <div class="chips-label">Try asking:</div>
@@ -583,7 +574,7 @@
             },
             "booking": {
                 keywords: ["book", "appointment", "consultation", "meeting", "schedule"],
-                response: "Great! To book a consultation, simply click the '📅 Book Consultation' button on the left, or I can open the booking form for you. Our team will get back to you within 24 hours to schedule your meeting! 📅"
+                response: "Great! To book a consultation, simply click the '📅 Book Consultation' button at the top, and our team will get back to you within 24 hours to schedule your meeting! 📅"
             },
             "about": {
                 keywords: ["about", "who are you", "company", "dominica"],
@@ -703,7 +694,7 @@
                     addMessage(data.response, "bot", false);
                 } catch (err) {
                     removeMessage(loadingId);
-                    addMessage("I'd love to help with that! For now, try clicking one of the quick buttons above to learn about our services, or click the 'Book Consultation' button on the left to speak with our team directly. 🤖", "bot");
+                    addMessage("I'd love to help with that! For now, try clicking one of the quick buttons above to learn about our services, or click 'Book Consultation' at the top to speak with our team directly. 🤖", "bot");
                 } finally {
                     btn.disabled = false; 
                     btn.textContent = "Send";
