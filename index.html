@@ -740,4 +740,25 @@
             const rawText = buttonElement.getAttribute("data-text");
             
             // Clean up HTML tags so it sounds natural
-            const cleanText = rawText.replace(/
+            const cleanText = rawText.replace(/<[^>]*>/g, "").replace(/\*\*/g, "");
+            
+            // Create the speech
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.rate = 1.0;
+            
+            // Try to find a clear English voice
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(v => v.lang.includes('en-US') || v.lang.includes('en-GB'));
+            if (preferredVoice) utterance.voice = preferredVoice;
+            
+            // Speak!
+            window.speechSynthesis.speak(utterance);
+        }
+        
+        // Pre-load voices (fixes a Chrome bug)
+        window.speechSynthesis.onvoiceschanged = () => { 
+            window.speechSynthesis.getVoices(); 
+        };
+    </script>
+</body>
+</html>
