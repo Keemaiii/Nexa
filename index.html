@@ -99,14 +99,14 @@
         .header h1 {
             font-family: 'Space Grotesk', sans-serif;  /* ✨ Heading font updated to Space Grotesk for a bold, modern look */
             font-weight: 700;
-            font-size: 2rem;
+            font-size: 3rem;                  /* 📈 INCREASED FONT SIZE (was 2rem) */
             color: var(--text);
             margin-bottom: 0.25rem;
         }
         
         .header p {
             color: var(--muted-text);
-            font-size: 0.9rem;
+            font-size: 1.15rem;               /* 📈 INCREASED FONT SIZE (was 0.9rem) */
             text-align: center;
         }
 
@@ -157,7 +157,7 @@
         .status {
             color: var(--accent);
             font-family: 'JetBrains Mono', monospace;  /* Monospace font from Figma */
-            font-size: 0.75rem;
+            font-size: 0.85rem;               /* 📈 INCREASED FONT SIZE */
             font-weight: 500;
             display: flex;
             align-items: center;
@@ -187,9 +187,9 @@
             background: transparent;
             border: 1px solid var(--border);
             color: var(--muted-text);
-            padding: 0.4rem 0.8rem;
+            padding: 0.5rem 1rem;             /* 📈 TALLER BUTTON */
             border-radius: var(--radius);
-            font-size: 0.8rem;
+            font-size: 0.9rem;                /* 📈 INCREASED FONT SIZE */
             cursor: pointer;
             transition: 0.2s;
         }
@@ -198,27 +198,49 @@
             color: var(--text); 
         }
 
-        /* 🌙 THEME TOGGLE BUTTON */
+        /* 🌙 THEME TOGGLE PILLBOX (Replaced circular button with a modern sliding switch) */
         .theme-toggle {
             position: absolute;
             top: 1.5rem;
             right: 1.5rem;
+            width: 64px;
+            height: 34px;
             background: var(--secondary);
             border: 1px solid var(--border);
-            color: var(--text);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            padding: 4px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .theme-toggle:hover {
+            border-color: var(--primary);
+        }
+        
+        .theme-toggle .toggle-thumb {
+            width: 24px;
+            height: 24px;
+            background: var(--text);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s ease;
+            font-size: 0.85rem;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s;
+            transform: translateX(0);
         }
-        .theme-toggle:hover { 
-            border-color: var(--primary); 
-            color: var(--primary); 
+
+        /* 🌞 LIGHT MODE PILLBOX OVERRIDE: Slides the thumb to the right and changes track color */
+        .light-mode .theme-toggle {
+            background: var(--primary); 
+            border-color: var(--primary);
+        }
+
+        .light-mode .theme-toggle .toggle-thumb {
+            transform: translateX(30px); 
+            background: #ffffff;
         }
 
         /* ============================================================================
@@ -246,8 +268,8 @@
         /* 💭 INDIVIDUAL MESSAGE BUBBLE */
         .message {
             display: flex;
-            gap: 1rem;
-            max-width: 85%;                   /* Messages never wider than 85% */
+            gap: 1.25rem;                     /* 📈 WIDER GAP to accommodate larger avatars */
+            max-width: 90%;                   /* 📈 SLIGHTLY WIDER to balance larger avatars */
             animation: slide-up 0.25s ease forwards;  /* Slide-up animation from Figma */
         }
         .message.bot { align-self: flex-start; }      /* Bot messages on the left */
@@ -255,15 +277,15 @@
 
         /* 👤 AVATAR (Bot and User icons) */
         .avatar {
-            width: 36px;
-            height: 36px;
+            width: 72px;                      /* 📈 DOUBLED ICON SIZE (was 36px) */
+            height: 72px;
             border-radius: 50%;               /* Makes it circular */
             background: var(--card);
             border: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 2.2rem;                /* 📈 Scaled up fallback emojis */
             flex-shrink: 0;                   /* Prevents shrinking */
             object-fit: cover;                /* Makes images fill the circle nicely */
         }
@@ -272,11 +294,11 @@
         .bubble {
             background: var(--card);
             color: var(--card-text);
-            padding: 1rem 1.25rem;
+            padding: 1.25rem 1.5rem;          /* 📈 LARGER PADDING for larger text/avatars */
             border-radius: calc(var(--radius) * 2);  /* Double the radius for softer corners */
             border: 1px solid var(--border);
             line-height: 1.6;
-            font-size: 0.95rem;
+            font-size: 1.1rem;                /* 📈 INCREASED FONT SIZE (was 0.95rem) */
         }
         .user .bubble {
             background: var(--primary);       /* User bubbles are red */
@@ -288,11 +310,12 @@
         .voice-btn {
             background: none;
             border: none;
-            font-size: 1rem;
+            font-size: 1.2rem;                /* 📈 LARGER ICON */
             cursor: pointer;
             opacity: 0.5;
             transition: 0.2s;
             padding: 0.5rem;
+            align-self: center;               /* Centers vertically next to the larger bubble */
         }
         .voice-btn:hover { 
             opacity: 1; 
@@ -305,7 +328,7 @@
         .chips-container { padding: 0 2rem 1rem; }
         .chips-label { 
             color: var(--muted-text); 
-            font-size: 0.8rem; 
+            font-size: 0.9rem;                /* 📈 INCREASED FONT SIZE */
             font-weight: 500; 
             margin-bottom: 0.75rem; 
             font-family: 'JetBrains Mono', monospace; 
@@ -319,9 +342,9 @@
             background: var(--card);
             border: 1px solid var(--border);
             color: var(--text);
-            padding: 0.5rem 1rem;
+            padding: 0.6rem 1.2rem;           /* 📈 TALLER PILL */
             border-radius: 20px;              /* Pill shape */
-            font-size: 0.85rem;
+            font-size: 0.95rem;               /* 📈 INCREASED FONT SIZE */
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -357,7 +380,7 @@
             left: 0.75rem;
             background: none;
             border: none;
-            font-size: 1.1rem;
+            font-size: 1.3rem;                /* 📈 LARGER ICON */
             cursor: pointer;
             color: var(--muted-text);
             transition: 0.2s;
@@ -369,9 +392,9 @@
             background: var(--bg);
             border: 1px solid var(--border);
             color: var(--text);
-            padding: 0.85rem 1rem 0.85rem 2.5rem;  /* Extra left padding for mic icon */
+            padding: 1.1rem 1rem 1.1rem 3.2rem;  /* 📈 TALLER INPUT for larger text */
             border-radius: var(--radius);
-            font-size: 0.95rem;
+            font-size: 1.05rem;               /* 📈 INCREASED FONT SIZE */
             outline: none;
             transition: border-color 0.2s ease;
         }
@@ -386,9 +409,10 @@
             background: var(--primary);
             color: var(--primary-text);
             border: none;
-            padding: 0.85rem 1.25rem;
+            padding: 1.1rem 1.5rem;           /* 📈 TALLER BUTTON */
             border-radius: var(--radius);
             font-weight: 600;
+            font-size: 1.05rem;               /* 📈 INCREASED FONT SIZE */
             cursor: pointer;
             transition: 0.2s;
         }
@@ -430,7 +454,7 @@
             margin: 0; 
             color: var(--text); 
             font-family: 'Rajdhani', sans-serif; 
-            font-size: 1.25rem; 
+            font-size: 1.35rem;               /* 📈 INCREASED FONT SIZE */
         }
         .close-modal {
             background: none; 
@@ -463,7 +487,10 @@
              🔝 HEADER SECTION
              ======================================================================== -->
         <div class="header">
-            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme" id="themeBtn">🌙</button>
+            <!-- ✨ NEW PILLBOX THEME TOGGLE -->
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme" id="themeBtn" aria-label="Toggle Dark/Light Mode">
+                <span class="toggle-thumb" id="themeIcon">🌙</span>
+            </button>
             
             <!-- 🖼️ COMPANY LOGO -->
             <!-- STUDENT NOTE: This loads our company logo from the assets folder.
@@ -568,12 +595,13 @@
         let recognition;
 
         // ========================================================================
-        // 🌙 THEME TOGGLE (Dark/Light mode)
+        // 🌙 THEME TOGGLE (Dark/Light mode pillbox switch)
         // ========================================================================
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
             const isLight = document.body.classList.contains('light-mode');
-            document.getElementById('themeBtn').textContent = isLight ? '☀️' : '🌙';
+            // Update the icon inside the sliding pill thumb
+            document.getElementById('themeIcon').textContent = isLight ? '☀️' : '🌙';
             // Save the user's choice so it remembers next time they visit
             localStorage.setItem('nexa-theme', isLight ? 'light' : 'dark');
         }
@@ -676,7 +704,7 @@
             // 2. Disable the send button and show loading
             const btn = document.getElementById("sendBtn");
             btn.disabled = true; 
-            btn.innerHTML = "<span style='font-size:1.2rem'>⏳</span>";
+            btn.innerHTML = "<span style='font-size:1.4rem'>⏳</span>"; // 📈 LARGER LOADING ICON
 
             // 3. Show "Thinking..." message
             const loadingId = addMessage("Thinking...", "bot", true);
