@@ -7,7 +7,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Rajdhani:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -72,27 +72,20 @@
             align-items: center;
             position: relative;
         }
-        
-        .header h1 {
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 700;
-            font-size: 2.25rem;
-            color: var(--text);
-            margin-bottom: 0.5rem;
-        }
-        
-        .header p {
-            color: var(--muted-text);
-            font-size: 1rem;
-            text-align: center;
-            max-width: 600px;
+
+        /* 📐 TOP ROW: Logo on LEFT, Toggle on RIGHT */
+        .header-top-row {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
         }
 
-        /* 🔗 HYPERLINKED LOGO STYLES */
+        /* 🔗 HYPERLINKED LOGO (TOP LEFT) */
         .logo-link {
             text-decoration: none;
             display: block;
-            margin: 0 auto 1rem auto;
             transition: transform 0.2s ease, filter 0.2s ease;
         }
         .logo-link:hover {
@@ -106,13 +99,56 @@
             display: block;
         }
 
+        /* 🌙 LARGER THEME TOGGLE BUTTON (TOP RIGHT) */
+        .theme-toggle {
+            background: var(--secondary);
+            border: 2px solid var(--border);
+            color: var(--text);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .theme-toggle:hover { 
+            border-color: var(--primary); 
+            color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        /* 🏷️ LARGER, BOLDER "NEXA" TITLE */
+        .header h1 {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 3.5rem;
+            color: var(--text);
+            margin-bottom: 0.25rem;
+            letter-spacing: 2px;
+            text-align: center;
+            line-height: 1;
+        }
+        
+        .header .tagline {
+            color: var(--muted-text);
+            font-size: 1rem;
+            text-align: center;
+            font-style: italic;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+        }
+
+        /* 📊 HEADER CONTROLS: EQUALLY SPACED */
         .header-controls {
             width: 100%;
             display: flex;
-            justify-content: center; /* Centers the three items nicely */
+            justify-content: space-around; /* This makes them equally spaced! */
             align-items: center;
-            margin-top: 1.5rem;
-            gap: 1.5rem; /* Space between the status, book button, and clear button */
+            padding: 0 1rem;
         }
 
         .status {
@@ -177,31 +213,6 @@
         .clear-btn:hover { 
             background: var(--secondary); 
             color: var(--text); 
-        }
-
-        /* 🌙 LARGER THEME TOGGLE BUTTON */
-        .theme-toggle {
-            position: absolute;
-            top: 2rem;
-            right: 2.5rem;
-            background: var(--secondary);
-            border: 2px solid var(--border);
-            color: var(--text);
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        }
-        .theme-toggle:hover { 
-            border-color: var(--primary); 
-            color: var(--primary);
-            transform: scale(1.05);
         }
 
         .messages {
@@ -367,7 +378,7 @@
         .chat-footer {
             padding: 0.75rem 2rem;
             text-align: center;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             color: var(--muted-text);
             border-top: 1px solid var(--border);
             background: var(--card);
@@ -426,16 +437,16 @@
         /* 📱 MOBILE RESPONSIVE ADJUSTMENTS */
         @media (max-width: 768px) {
             .header { padding: 1.5rem 1.5rem; }
-            .header h1 { font-size: 1.75rem; }
-            .header p { font-size: 0.875rem; }
             .company-logo { max-width: 100px; }
             .theme-toggle {
                 width: 42px; height: 42px; font-size: 1.25rem;
-                top: 1.5rem; right: 1.5rem;
             }
+            .header h1 { font-size: 2.5rem; letter-spacing: 1px; }
+            .header .tagline { font-size: 0.85rem; }
             .header-controls {
                 flex-wrap: wrap;
                 gap: 0.75rem;
+                padding: 0;
             }
             .messages { padding: 1.5rem; gap: 1.25rem; }
             .message { max-width: 95%; gap: 0.75rem; }
@@ -461,26 +472,32 @@
 <body>
     <div class="chat-container">
         <div class="header">
-            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme" id="themeBtn">🌙</button>
             
-            <!-- 🔗 HYPERLINKED LOGO: Opens client website in a new tab -->
-            <a href="https://outsourcedominica.org" target="_blank" rel="noopener noreferrer" class="logo-link" title="Visit Outsource Development Studio Website">
-                <img src="/assets/logo.png" 
-                     alt="Outsource Development Studio Logo" 
-                     class="company-logo"
-                     onerror="this.style.display='none';">
-            </a>
+            <!-- 📐 TOP ROW: Logo on LEFT, Toggle on RIGHT -->
+            <div class="header-top-row">
+                <!-- 🔗 HYPERLINKED LOGO (TOP LEFT) -->
+                <a href="https://outsourcedominica.org" target="_blank" rel="noopener noreferrer" class="logo-link" title="Visit Outsource Development Studio Website">
+                    <img src="/assets/logo.png" 
+                         alt="Outsource Development Studio Logo" 
+                         class="company-logo"
+                         onerror="this.style.display='none';">
+                </a>
+                
+                <!-- 🌙 THEME TOGGLE (TOP RIGHT) -->
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme" id="themeBtn">🌙</button>
+            </div>
             
-            <h1>Nexa</h1>
-            <p>Ask anything about Outsource Development Studio's Services.</p>
+            <!-- 🏷️ BIGGER, BOLDER TITLE -->
+            <h1>NEXA</h1>
+            <p class="tagline">Your Business Optimized</p>
             
+            <!-- 📊 EQUALLY SPACED CONTROLS -->
             <div class="header-controls">
                 <div class="status">
                     <span class="status-dot pulse-ring"></span>
                     ONLINE
                 </div>
                 
-                <!-- 📅 BOOK CONSULTATION BUTTON (Between Online and Clear Chat) -->
                 <button class="book-header-btn" onclick="openModal()">
                     📅 Book Consultation
                 </button>
@@ -522,7 +539,7 @@
 
         <!-- ⚠️ FOOTER DISCLAIMER -->
         <div class="chat-footer">
-            <p>⚠️ <strong>Disclaimer:</strong> AI is not always accurate and an agent must verify the information. |  <strong>ECCU Camp 2026</strong></p>
+            <p>⚠️ <strong>Disclaimer:</strong> AI is not always accurate and humans must verify the information. | 🇩🇲 <strong>ECCU Camp 2026</strong></p>
         </div>
     </div>
 
@@ -544,9 +561,6 @@
         let isListening = false;
         let recognition;
 
-        // ============================================================================
-        // 📚 LOCAL KNOWLEDGE BASE (Works without API keys!)
-        // ============================================================================
         const localKnowledge = {
             "bpo": {
                 keywords: ["bpo", "outsourcing", "business process"],
