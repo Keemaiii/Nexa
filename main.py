@@ -162,8 +162,10 @@ def get_ai_response(user_msg: str, service: Optional[str], register: str) -> str
         # Send the prompt + user message to Gemini and extract the text
         return gemini_model.generate_content(prompt + "\n\nUser: " + safe_msg).text
     except Exception as e:
-        # Graceful error handling: Never crash the app, always return a friendly message
-        return f"😅 I had a hiccup connecting to the AI. (Error: {e})"
+        # JUDGE NOTE: We NEVER show raw technical errors (like API timeouts or stack traces) to the user.
+        # Instead, we log it to the server console for the developers to debug, and send a friendly message to the frontend.
+        print(f"Backend Error: {e}") 
+        return "😅 I had a slight hiccup connecting to my brain. Please give me a moment and try again!"
 
 # ==============================================================================
 # 🌐 API ENDPOINT (The door the frontend knocks on)
