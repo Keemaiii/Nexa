@@ -201,3 +201,119 @@ async def chat(request: ChatRequest):
 @app.get("/health")
 async def health():
     return {"status": "online", "bot": BOT_NAME}
+    
+
+# DAY 15 NONSENSE
+
+
+
+
+# =====================================================
+#   ECCU GAP Camp 2026 · WEEK 3 · DAY 14 SKELETON
+#   Decide — Agentic Journey + Distress Safeguard (Break-Glass)
+#   Runs unchanged. TODOs are safe placeholders.
+#
+#   FACILITATOR CARE NOTE (Day 14):
+#     No student is ever forced to role-play severe distress.
+#     Any student can opt out at any time and rotate to the QA-Logger seat.
+#     Read this line out loud before the Distress Drill starts.
+# =====================================================
+
+from typing import Optional
+from datetime import datetime
+
+# --- UX DESIGNER (lead): the distress trigger phrases ---
+DISTRESS_TRIGGERS = {
+    "panic":     ["can't breathe", "can't cope", "help now", "emergency", "overwhelemed", "need reassurance"],
+    "self_harm": ["hurt myself", "end it", "no way out", "kms", "kill myself", "suicide", "commit", "attempt"],
+    "aggrieved": ["nobody listens", "you people never", "sick of this", "I wish someone would"],
+}
+
+def detect_distress(msg: str) -> Optional[str]:
+    m = msg.lower()
+    for category, words in DISTRESS_TRIGGERS.items():
+        if any(w in m for w in words):
+            return category
+    return None
+
+# --- PRODUCT OWNER (lead): the escalation path — confirmed with client ---
+ESCALATION_PATH = {
+    "panic":     "Please call +1 (23) 456-7890. We will help however we can.",
+    "self_harm": "Escalting; Please contact +9 (87) 654-3210. We care about your mental health and safety.",
+    "aggrieved": "Please contact 124750298130 or go to sdfjak qwbafhba to further speak about this topic.",
+    "unknown":   "Please be guided to Demetrius Demarquis Donquavius Bartholomew Jackson III for further guidance.",
+}
+
+def escalation_line(category: str) -> str:
+    return ESCALATION_PATH.get(category, ESCALATION_PATH["unknown"])
+
+# --- SCRUM MASTER (lead): the 2-second Break-Glass SLA ---
+BREAK_GLASS_SLA_SECONDS = 2.0
+
+def break_glass_reply(category: str) -> str:
+    """
+    Drops standard persona. Switches to low-cognitive-load empathetic register.
+    Escalates immediately.
+    """
+    if category == "self_harm":
+        return (f"Thank you for telling me. You matter. "
+                f"Please call {escalation_line(category)} right now — they will answer.")
+    return (f"I hear you. Let me connect you with a real person now — "
+            f"{escalation_line(category)}.")
+
+# --- SYSTEMS DEVELOPER (lead): the 5-step Journey Controller (state machine) ---
+JOURNEY_STEPS = [
+    "greeting",         # 1
+    "identify_need",    # 2
+    "collect_facts",    # 3
+    "offer_next_step",  # 4
+    "confirm_close",    # 5
+]
+
+def journey_controller(user_msgs: list[str]) -> list[dict]:
+    """
+    Carries emotional state from step 1 → step 5. If distress is detected
+    at ANY step, the loop breaks and the Break-Glass fires within the SLA.
+    """
+    state = {"step_index": 0, "mood_history": [], "escalated": False}
+    log = []
+    for msg in user_msgs:
+        t0 = datetime.utcnow()
+        distress = detect_distress(msg)
+        state["mood_history"].append(distress or "ok")
+
+        if distress:
+            reply = break_glass_reply(distress)
+            latency = (datetime.utcnow() - t0).total_seconds()
+            log.append({
+                "step":     JOURNEY_STEPS[state["step_index"]],
+                "user":     msg,
+                "distress": distress,
+                "reply":    reply,
+                "latency":  latency,
+                "sla_ok":   latency < BREAK_GLASS_SLA_SECONDS,
+            })
+            state["escalated"] = True
+            break
+
+        # Otherwise advance the journey
+        step_name = JOURNEY_STEPS[state["step_index"]]
+        reply = f"[{step_name}] Understood — carrying on."
+        log.append({"step": step_name, "user": msg, "distress": None,
+                    "reply": reply, "latency": 0.0, "sla_ok": True})
+        state["step_index"] = min(state["step_index"] + 1, len(JOURNEY_STEPS) - 1)
+
+    return log
+
+if __name__ == "__main__":
+    demo = [
+        "Hi, I need help with my paperwork.",
+        "I've feel so stressed and like wanna kms",
+        
+    ]
+    print("=== Day 14 · Journey Log ===")
+    for entry in journey_controller(demo):
+        mark = "🚨" if entry["distress"] else "  "
+        print(f"{mark} [{entry['step']}] user='{entry['user'][:40]}...'")
+        print(f"   reply='{entry['reply']}'")
+        print(f"   latency={entry['latency']:.4f}s  sla_ok={entry['sla_ok']}")
