@@ -324,8 +324,8 @@
         // =========================================
         // CONFIGURATION
         // =========================================
-        // IMPORTANT: Replace this with your actual Render backend URL!
-        const API_URL = "https://nexa-backend.onrender.com"; 
+        // Tells the JavaScript to send chat requests to the exact same URL you are currently visiting
+        const API_URL = window.location.origin; ; 
         const sessionId = 'sess_' + Math.random().toString(36).substr(2, 9);
 
         // DOM ELEMENTS
