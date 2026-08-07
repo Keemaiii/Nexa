@@ -778,4 +778,4 @@ async def rate_message(request: RatingRequest):
 
 @app.get("/", response_class=HTMLResponse)
 async def root():
-    return "<h1>Nexa AI Backend is Running 🤖</h1><p>Use the frontend interface to chat.</p>"v
+    return "<h1>Nexa AI Backend is Running 🤖</h1><p>Use the frontend interface to chat.</p>"
