@@ -212,28 +212,31 @@ def build_tcrdei_prompt(service_data: dict, register: str) -> str:
 {tone_hints.get(register, tone_hints['warm'])}
 """
 
+# xAI model names to try, in order (free-tier keys vary by account)
+GROK_MODELS = ["grok-3", "grok-2-latest", "grok-2", "grok-beta"]
+
 def call_llm(prompt: str, user_msg: str) -> str:
-    """
-    DAY 18 RESILIENCE: Smart router — tries Grok first, falls back to Gemini,
-    then to a safe static message. The user NEVER sees a crash.
-    """
+    """Resilient router: Grok (multiple models) → Gemini → safe static reply."""
     safe_msg = redact_pii(user_msg)
 
-    # 1) Try Grok (primary)
+    # 1) Try Grok across several model names
     if grok_client:
-        try:
-            response = grok_client.chat.completions.create(
-                model="grok-beta",
-                messages=[
-                    {"role": "system", "content": prompt},
-                    {"role": "user",   "content": safe_msg},
-                ],
-                temperature=0.4,
-            )
-            return response.choices[0].message.content
-        except Exception as e:
-            print(f"⚠️ Grok failed: {e} — falling back to Gemini.")
-            log_bug(user_msg, str(e), "grok_api")
+        for model in GROK_MODELS:
+            try:
+                response = grok_client.chat.completions.create(
+                    model=model,
+                    messages=[
+                        {"role": "system", "content": prompt},
+                        {"role": "user",   "content": safe_msg},
+                    ],
+                    temperature=0.4,
+                )
+                print(f"✅ Grok responded using model: {model}")
+                return response.choices[0].message.content
+            except Exception as e:
+                print(f"⚠️ Grok model '{model}' failed: {e}")
+                log_bug(user_msg, f"grok/{model}: {e}", "grok_api")
+        print("❌ All Grok models failed — falling back to Gemini.")
 
     # 2) Fallback to Gemini
     if gemini_model:
@@ -241,7 +244,7 @@ def call_llm(prompt: str, user_msg: str) -> str:
             full_prompt = f"{prompt}\n\nUser: {safe_msg}"
             return gemini_model.generate_content(full_prompt).text
         except Exception as e:
-            print(f"⚠️ Gemini failed: {e}")
+            print(f"❌ Gemini failed: {e}")
             log_bug(user_msg, str(e), "gemini_api")
 
     # 3) Ultimate static fallback
