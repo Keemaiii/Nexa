@@ -778,4 +778,10 @@ async def rate_message(request: RatingRequest):
 
 @app.get("/", response_class=HTMLResponse)
 async def root():
-    return "<h1>Nexa AI Backend is Running 🤖</h1><p>Use the frontend interface to chat.</p>"
+    """Serves the main frontend HTML file directly to the browser."""
+    try:
+        # This reads your index.html file and sends it to the user
+        with open("index.html", "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read(), status_code=200)
+    except FileNotFoundError:
+        return HTMLResponse("<h1>Nexa AI Backend is Running 🤖</h1><p>index.html not found in root directory.</p>", status_code=404)
