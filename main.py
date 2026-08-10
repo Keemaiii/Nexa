@@ -103,9 +103,9 @@ def check_authority(msg: str) -> bool:
 # ==============================================================================
 DISTRESS_TRIGGERS = {
     "grief":     ["passed away", "died", "funeral", "lost my", "she's gone", "he's gone"],
-    "panic":     ["can't breathe", "can't cope", "help now", "emergency"],
-    "self_harm": ["hurt myself", "end it", "no way out"],
-    "aggrieved": ["nobody listens", "you people never", "sick of this"],
+    "panic":     ["can't breathe", "can't cope", "help now", "emergency", "overwhelmed", "overwhelming", "overstimulating", "overstimulated"],
+    "self_harm": ["hurt myself", "end it", "no way out", "kill myself", "kms", "giving up", "gave up"],
+    "aggrieved": ["nobody listens", "you people never", "sick of this", "it's always", "its always"],
 }
 
 ESCALATION_PATHS = {
