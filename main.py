@@ -104,14 +104,14 @@ def check_authority(msg: str) -> bool:
 DISTRESS_TRIGGERS = {
     "grief":     ["passed away", "died", "funeral", "lost my", "she's gone", "he's gone"],
     "panic":     ["can't breathe", "can't cope", "help now", "emergency", "overwhelmed", "overwhelming", "overstimulating", "overstimulated"],
-    "self_harm": ["hurt myself", "end it", "no way out", "kill myself", "kms", "giving up", "gave up"],
-    "aggrieved": ["nobody listens", "you people never", "sick of this", "it's always", "its always"],
+    "self_harm": ["hurt myself", "end it", "no way out", "kill myself", "kms", "giving up", "gave up", "suicide", "commit",],
+    "aggrieved": ["nobody listens", "you people never", "sick of this", "it's always", "its always", "fuck", "bitch", "ass", "asshole", "shit", "shitty", "fucking"],
 }
 
 ESCALATION_PATHS = {
     "grief":     "our Bereavement Support Partner",
     "panic":     "Emergency Services (911 / 999)",
-    "self_harm": "the National Crisis Hotline ('+1 (23) 456-7890') ",
+    "self_harm": "the National Crisis Hotline (203) ",
     "aggrieved": "our Client Relations Desk",
 }
 
