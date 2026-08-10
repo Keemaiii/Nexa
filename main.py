@@ -111,7 +111,7 @@ DISTRESS_TRIGGERS = {
 ESCALATION_PATHS = {
     "grief":     "our Bereavement Support Partner",
     "panic":     "Emergency Services (911 / 999)",
-    "self_harm": "the National Crisis Hotline",
+    "self_harm": "the National Crisis Hotline ('+1 (23) 456-7890') ",
     "aggrieved": "our Client Relations Desk",
 }
 
