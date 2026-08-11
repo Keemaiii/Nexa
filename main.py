@@ -104,8 +104,8 @@ def check_authority(msg: str) -> bool:
 DISTRESS_TRIGGERS = {
     "grief":     ["passed away", "died", "funeral", "lost my", "she's gone", "he's gone"],
     "panic":     ["can't breathe", "can't cope", "help now", "emergency", "overwhelmed", "overwhelming", "overstimulating", "overstimulated", "It's too much", "I can't handle it", "It's overflowing", "Why can't it stop", "It's becoming too much", "I can't handle it anymore"],
-    "self_harm": ["hurt myself", "end it", "no way out", "kill myself", "kms", "giving up", "gave up", "suicide", "commit", "I will never be enough", "I will never be worthy", "I am always the problem", "I hate myself", ],
-    "aggrieved": ["nobody listens", "you people never", "sick of this", "it's always", "its always", "fuck", "bitch", "ass", "asshole", "shit", "shitty", "fucking", "kys", "kill yourself", "No one can never", "Why don't they ever", "It's all my fault", ],
+    "self_harm": ["hurt myself", "end it", "no way out", "kill myself", "kms", "giving up", "gave up", "suicide", "commit", "I will never be enough", "I will never be worthy", "I am always the problem", "I hate myself", "I hate the person I became"],
+    "aggrieved": ["nobody listens", "you people never", "sick of this", "it's always", "its always", "fuck", "bitch", "ass", "asshole", "shit", "shitty", "fucking", "kys", "kill yourself", "No one can never", "Why don't they ever", "It's all my fault"],
 }
 
 ESCALATION_PATHS = {
