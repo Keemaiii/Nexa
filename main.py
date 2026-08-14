@@ -1,9 +1,8 @@
 # ==============================================================================
-#   NEXA · AI SERVICE NAVIGATOR · main.py
-#   ECCU / ECCB Generative AI & Python Summer Camp 2026
-#   Client: Outsource Development Studio, Dominica
+# NEXA · AI SERVICE NAVIGATOR · main.py
+# ECCU / ECCB Generative AI & Python Summer Camp 2026
+# Client: Outsource Development Studio, Dominica
 # ==============================================================================
-
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
@@ -14,8 +13,11 @@ import re
 import csv
 import uuid
 from typing import Optional, Dict, Callable
-from datetime import datetime
-import google.generativeai as genai
+from datetime import datetime, timezone
+
+# 📌 UPDATED: `google-generativeai` is deprecated. We now use the new
+# unified `google-genai` SDK (pip package: google-genai, import: google.genai).
+from google import genai
 from openai import OpenAI
 from dotenv import load_dotenv
 
@@ -56,7 +58,7 @@ def translate_to_plain(msg: str) -> str:
     words = msg.split()
     return " ".join(JARGON_TO_PLAIN.get(w.lower(), w) for w in words)
 
-# 📌 ADDED: The missing SERVICES dictionary so the bot doesn't crash!
+# 📌 The SERVICES dictionary so the bot doesn't crash!
 SERVICES = {
     "bpo": {"name": "Business Process Outsourcing", "plain": "outsourced business services", "keywords": ["bpo", "outsource", "call center", "support"]},
     "recruitment": {"name": "Recruitment", "plain": "talent acquisition and hiring", "keywords": ["recruit", "hire", "job", "talent", "cv"]},
@@ -68,7 +70,7 @@ SERVICES = {
 # 🚫 AXIS 1: AUTHORITY / THE RED LINE
 # ==============================================================================
 AUTHORITY_TRIGGERS = [
-    "price", "cost", "how much", "quote", "my case", "my application", 
+    "price", "cost", "how much", "quote", "my case", "my application",
     "am i eligible", "my balance", "my account", "for me", "my status"
 ]
 
@@ -95,7 +97,8 @@ ESCALATION_PATHS = {
 def detect_distress(msg: str) -> Optional[str]:
     m = msg.lower()
     for category, words in DISTRESS_TRIGGERS.items():
-        if any(w in m for w in words): return category
+        if any(w in m for w in words):
+            return category
     return None
 
 def break_glass_reply(category: str) -> str:
@@ -111,14 +114,18 @@ def break_glass_reply(category: str) -> str:
 # ==============================================================================
 def detect_service(msg: str) -> Optional[str]:
     for key, data in SERVICES.items():
-        if any(kw in msg.lower() for kw in data["keywords"]): return key
+        if any(kw in msg.lower() for kw in data["keywords"]):
+            return key
     return None
 
 def detect_register(msg: str) -> str:
     m = msg.lower()
-    if any(w in m for w in ["died", "passed away", "funeral", "loss"]): return "bereaved"
-    if any(w in m for w in ["asap", "urgent", "emergency", "now"]):      return "urgent"
-    if any(w in m for w in ["regarding", "kindly", "please advise"]):    return "professional"
+    if any(w in m for w in ["died", "passed away", "funeral", "loss"]):
+        return "bereaved"
+    if any(w in m for w in ["asap", "urgent", "emergency", "now"]):
+        return "urgent"
+    if any(w in m for w in ["regarding", "kindly", "please advise"]):
+        return "professional"
     return "warm"
 
 # ==============================================================================
@@ -126,9 +133,9 @@ def detect_register(msg: str) -> str:
 # ==============================================================================
 def redact_pii(text: str) -> str:
     pii_patterns = {
-        "phone": r"\b\d{3}[-.\s]?\d{4}\b",
         "email": r"\b[\w\.-]+@[\w\.-]+\.\w+\b",
-        "nin":   r"\b\d{9}\b",
+        "phone": r"\b\d{3}[-.\s]?\d{4}\b",
+        "nin": r"\b\d{9}\b",
     }
     for label, pattern in pii_patterns.items():
         text = re.sub(pattern, f"[REDACTED:{label}]", text)
@@ -151,15 +158,27 @@ log_tone("warm", "Friendly, encouraging, simple words.", "confirmed")
 log_tone("bereaved", "Gentle condolences first. Max 2 sentences of facts.", "confirmed")
 
 # ==============================================================================
-# 🧠 AI BRAINS: GEMINI (Primary) + GROK (Fallback)
+# 🧠 AI BRAINS: GEMINI (Primary, free tier) + GROK (Optional fallback)
 # ==============================================================================
+# 📌 UPDATED: `gemini-2.0-flash-lite` was shut down by Google in 2026, so the
+# bot was silently failing on every request and falling through to Grok (or
+# the "having trouble connecting" message if no Grok key was set).
+#
+# We now default to a current, free-tier-eligible model, and let the model
+# name be overridden from Render's environment variables without a redeploy.
+# Good options as of Aug 2026:
+#   - "gemini-2.5-flash-lite" -> cheapest/most generous free-tier limits (default here)
+#   - "gemini-2.5-flash"      -> stronger general-purpose free model
+#   - "gemini-3.5-flash"      -> newest/most capable, but check current free-tier
+#                                 quotas in Google AI Studio before relying on it
+#                                 for a live camp demo (limits change often).
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-gemini_model = None
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite")
+
+gemini_client = None
 if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
-    # 📌 UPDATED: Changed to the actual "flash-lite" model name!
-    gemini_model = genai.GenerativeModel("gemini-2.0-flash-lite") 
-    print("✅ Camp Gemini key loaded (PRIMARY).")
+    gemini_client = genai.Client(api_key=GEMINI_API_KEY)
+    print(f"✅ Camp Gemini key loaded (PRIMARY). Model: {GEMINI_MODEL}")
 else:
     print("⚠️ No Gemini key found.")
 
@@ -176,20 +195,21 @@ def safe_call(fn: Callable, *args, fallback: str = None, on_error=None, **kwargs
     try:
         return fn(*args, **kwargs)
     except Exception as exc:
-        if on_error: on_error(exc)
+        if on_error:
+            on_error(exc)
         return fallback or "I hit a snag. Let me connect you with a human agent right now."
 
 def build_tcrdei_prompt(service_data: dict, register: str) -> str:
     tone_hints = {
-        "warm":         "TONE: Friendly, encouraging, simple words. Add a 💛 emoji.",
+        "warm": "TONE: Friendly, encouraging, simple words. Add a 💛 emoji.",
         "professional": "TONE: Polished, concise, respectful. No slang.",
-        "urgent":       "TONE: Fast, direct, action-oriented. Use bullet points.",
-        "bereaved":     "TONE: Open with gentle condolences. Explain gently. Max 2 sentences of facts.",
+        "urgent": "TONE: Fast, direct, action-oriented. Use bullet points.",
+        "bereaved": "TONE: Open with gentle condolences. Explain gently. Max 2 sentences of facts.",
     }
     return f"""
 [T] You are {BOT_NAME}, an AI Navigator for {CLIENT_NAME} in Dominica.
 [C] Context: The user is asking about {service_data['name']}. Plain English: {service_data['plain']}.
-    Ethical rule: You are the GPS; the human is the driver. NEVER quote prices.
+Ethical rule: You are the GPS; the human is the driver. NEVER quote prices.
 [R] Reference: Always guide the user to book a human consultation.
 [D] Success = the user feels understood, informed, and safe.
 [E] Check: does this satisfy [D]? If not, reroute.
@@ -201,7 +221,13 @@ GROK_MODELS = ["grok-3", "grok-2-latest", "grok-2", "grok-beta"]
 
 def call_gemini(prompt: str, user_msg: str) -> str:
     full_prompt = f"{prompt}\n\nUser: {user_msg}"
-    return gemini_model.generate_content(full_prompt).text
+    # 📌 UPDATED: new SDK call shape — client.models.generate_content(...)
+    # instead of the old model.generate_content(...).
+    response = gemini_client.models.generate_content(
+        model=GEMINI_MODEL,
+        contents=full_prompt,
+    )
+    return response.text
 
 def call_grok(prompt: str, user_msg: str) -> str:
     for model in GROK_MODELS:
@@ -219,15 +245,17 @@ def call_grok(prompt: str, user_msg: str) -> str:
 def call_llm(prompt: str, user_msg: str) -> str:
     safe_msg = redact_pii(translate_to_plain(user_msg))
 
-    if gemini_model:
+    if gemini_client:
         result = safe_call(call_gemini, prompt, safe_msg, fallback=None,
-                           on_error=lambda e: log_bug(user_msg, f"Gemini error: {e}", "gemini_api"))
-        if result: return result
+                            on_error=lambda e: log_bug(user_msg, f"Gemini error: {e}", "gemini_api"))
+        if result:
+            return result
 
     if grok_client:
         result = safe_call(call_grok, prompt, safe_msg, fallback=None,
-                           on_error=lambda e: log_bug(user_msg, f"Grok error: {e}", "grok_api"))
-        if result: return result
+                            on_error=lambda e: log_bug(user_msg, f"Grok error: {e}", "grok_api"))
+        if result:
+            return result
 
     return f"I'm having trouble connecting right now. Please email {CLIENT_EMAIL}."
 
@@ -241,19 +269,21 @@ def init_ratings_log():
     if not os.path.exists(RATINGS_FILE):
         with open(RATINGS_FILE, "w", newline="") as f:
             csv.writer(f).writerow(["timestamp", "message_id", "session_id", "rating", "comment", "bot_response_snippet"])
+
 init_ratings_log()
 
 def log_rating(message_id: str, session_id: str, rating: str, comment: str, bot_response: str):
     with open(RATINGS_FILE, "a", newline="") as f:
-        csv.writer(f).writerow([datetime.utcnow().isoformat(timespec="seconds"), message_id, session_id, rating, comment, bot_response[:150]])
+        csv.writer(f).writerow([datetime.now(timezone.utc).isoformat(timespec="seconds"), message_id, session_id, rating, comment, bot_response[:150]])
 
 def log_bug(input_str: str, error: str, axis_tag: str = "none"):
     try:
         file_exists = os.path.exists(BUG_LOG_FILE)
         with open(BUG_LOG_FILE, "a", newline="") as f:
             w = csv.writer(f)
-            if not file_exists: w.writerow(["timestamp", "input", "error", "axis_tag"])
-            w.writerow([datetime.utcnow().isoformat(timespec="seconds"), input_str[:80], error, axis_tag])
+            if not file_exists:
+                w.writerow(["timestamp", "input", "error", "axis_tag"])
+            w.writerow([datetime.now(timezone.utc).isoformat(timespec="seconds"), input_str[:80], error, axis_tag])
     except Exception as e:
         print(f"Could not write bug log: {e}")
 
@@ -315,7 +345,6 @@ async def rate_message(request: RatingRequest):
         log_bug("rating", str(e), "none")
         raise HTTPException(status_code=500, detail="Could not save rating.")
 
-# 📌 FIXED: Completed the cut-off root endpoint
 @app.get("/", response_class=HTMLResponse)
 async def root():
     try:
