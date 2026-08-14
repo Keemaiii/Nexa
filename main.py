@@ -1,421 +1,231 @@
-# ==============================================================================
-#   NEXA · AI SERVICE NAVIGATOR · main.py
-#   ECCU / ECCB Generative AI & Python Summer Camp 2026
-#   Client: Outsource Development Studio, Dominica
-#
-#   This is our Pod's final code. We combined everything we learned over the
-#   4 weeks. Every section has comments from the "Hat" who led that part
-#   (UX Designer, Product Owner, Systems Developer, or Scrum Master).
-#
-#   Big rule our facilitator drilled into us:
-#       "The bot is the GPS. The human is the driver."
-# ==============================================================================
+# ==========================================
+# 🛠️ THE TOOLBOX (Importing our supplies)
+# ==========================================
+import streamlit as st      # Streamlit turns Python into a website!
+import google.generativeai as genai # The "phone" to call the Google Gemini AI brain.
+import re                   # Search tool to find hidden patterns (like emails).
+import os                   # Lets us read Render's secret Environment Variables.
+import time                 # For counting seconds.
 
-# --- IMPORTS (Systems Developer lead) -----------------------------------------
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
-import os
-import re
-import csv
-import uuid
-from typing import Optional, Dict, Callable
-from datetime import datetime
-import google.generativeai as genai
-from openai import OpenAI
-from dotenv import load_dotenv
+# ==========================================
+# 🩺 DIAGNOSTIC PANEL (temporary — remove before demo!)
+# ==========================================
+# This runs every time the page loads so we can see if Render is passing our secret key.
+_gemini_key = st.secrets.get("GOOGLE_API_KEY") or os.environ.get("GOOGLE_API_KEY")
 
-load_dotenv()
+with st.sidebar:
+    st.error("🔍 **API DEBUG PANEL**")
+    if _gemini_key:
+        st.success(f"✅ Gemini key detected: `{_gemini_key[:8]}...`")
+    else:
+        st.warning("❌ No Gemini key found in Render Environment!")
+    st.caption("If you see ❌, go to Render -> Environment and add GOOGLE_API_KEY.")
 
-app = FastAPI(title="Nexa AI Navigator")
+# ==========================================
+# 🪪 1. THE BOT'S ID CARD (Client Info)
+# ==========================================
+CLIENT_NAME = "Outsource Development Studio Inc."
+CLIENT_LOCATION = "Roseau, Dominica"
+CLIENT_PHONE = "+1 (767) 225-8606"
+CLIENT_EMAIL = "admin@outsourcejobsda.com"
+CLIENT_WEBSITE = "https://outsourcedevelopment.org"
 
-# CORS stuff so the frontend can actually talk to this backend
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Serve our pictures (logos, avatars)
-try:
-    app.mount("/assets", StaticFiles(directory="assets"), name="assets")
-except Exception:
-    pass
-
-# ==============================================================================
-# 🤖 DAY 1: BOT IDENTITY (UX Designer lead)
-# ==============================================================================
-BOT_NAME = "Nexa"
-BOT_ROLE = "AI Service Navigator"
-CLIENT_NAME = "Outsource Development Studio"
-CLIENT_EMAIL = "hello@outsourcedom.com"
-
-# ==============================================================================
-# 🗺️ DAY 4 & 8: TERRITORY & SERVICES (Product Owner lead)
-# ==============================================================================
-# This is our "knowledge base". We mapped out what the client actually does
-# so the bot doesn't hallucinate fake services.
-# --- DAY 4: JARGON TO PLAIN (UX Designer lead) ---
-# Day 4 was all about "dignity in code" and plain language. If a user types
-# corporate jargon, we swap it to plain English before the AI even sees it.
-JARGON_TO_PLAIN = {
-    "synergy": "teamwork",
-    "bandwidth": "time",
-    "onboard": "train",
-    "bpo": "outsourcing",
-    "kpi": "goal",
-}
-
-def translate_to_plain(msg: str) -> str:
-    words = msg.split()
-    return " ".join(JARGON_TO_PLAIN.get(w.lower(), w) for w in words)
-
-# ==============================================================================
-# 🚫 AXIS 1: AUTHORITY / THE RED LINE (Scrum Master lead)
-# ==============================================================================
-# Day 6 taught us about the "Red Line". The bot is NEVER allowed to answer
-# case-specific questions or quote prices. It must escalate to a human.
-AUTHORITY_TRIGGERS = [
-    "price", "cost", "how much", "quote",
-    "my case", "my application", "am i eligible", "my balance",
-    "my account", "for me", "my status"
+# ==========================================
+# 👕 2. THE BOT'S WARDROBE (Themes & Colors)
+# ==========================================
+THEMES = [
+    {"name": "Dark Monochrome & Red", "bg_primary": "#121212", "bg_sidebar": "#1a1a1a", "bg_secondary": "#242424", "bg_tertiary": "#2d2d2d", "text_primary": "#ffffff", "text_secondary": "#a3a3a3", "accent_primary": "#ef4444", "card_bg": "#242424", "border_color": "#404040"},
+    {"name": "Light Monochrome & Red", "bg_primary": "#ffffff", "bg_sidebar": "#f4f4f5", "bg_secondary": "#e4e4e7", "bg_tertiary": "#f4f4f5", "text_primary": "#18181b", "text_secondary": "#52525b", "accent_primary": "#dc2626", "card_bg": "#ffffff", "border_color": "#d4d4d8"},
+    {"name": "Slate & Crimson", "bg_primary": "#0f172a", "bg_sidebar": "#1e293b", "bg_secondary": "#334155", "bg_tertiary": "#1e293b", "text_primary": "#f8fafc", "text_secondary": "#94a3b8", "accent_primary": "#991b1b", "card_bg": "#334155", "border_color": "#475569"}
 ]
 
-def check_authority(msg: str) -> bool:
-    """Returns True if it's safe to answer. False = ESCALATE."""
-    return not any(trigger in msg.lower() for trigger in AUTHORITY_TRIGGERS)
+if "theme_index" not in st.session_state:
+    st.session_state.theme_index = 0
+current_theme = THEMES[st.session_state.theme_index]
 
-# ==============================================================================
-# 🚨 DAY 14: DISTRESS & BREAK-GLASS (UX Designer + Scrum Master lead)
-# ==============================================================================
-# This was the heaviest day. If someone is in crisis, the bot drops the
-# "Nexa" persona completely and gets them to a human ASAP (2-second SLA).
-# We expanded the triggers based on real scenarios our Product Owner brought up.
+st.markdown(f"""
+<style>
+    :root {{ --bg-primary: {current_theme['bg_primary']}; --bg-sidebar: {current_theme['bg_sidebar']}; --bg-secondary: {current_theme['bg_secondary']}; --bg-tertiary: {current_theme['bg_tertiary']}; --text-primary: {current_theme['text_primary']}; --text-secondary: {current_theme['text_secondary']}; --accent-primary: {current_theme['accent_primary']}; --card-bg: {current_theme['card_bg']}; --border-color: {current_theme['border_color']}; }}
+    .stApp {{ background-color: var(--bg-primary) !important; color: var(--text-primary) !important; }}
+    section[data-testid="stSidebar"] {{ background-color: var(--bg-sidebar) !important; border-right: 1px solid var(--border-color); }}
+    section[data-testid="stSidebar"] * {{ color: var(--text-primary) !important; }}
+    .ods-badge {{ width: 56px; height: 56px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.125rem; background-color: var(--accent-primary); margin-right: 1rem; border: 2px solid var(--text-primary); }}
+    .stChatInput {{ background-color: var(--bg-secondary) !important; border: 1px solid var(--border-color) !important; }}
+    .stChatInput input {{ color: var(--text-primary) !important; }}
+    .chat-bubble-user {{ display: flex; justify-content: flex-end; margin-bottom: 1rem; animation: fadeIn 0.3s ease-out; }}
+    .chat-bubble-user > div {{ max-width: 80%; padding: 0.75rem 1rem; border-radius: 1rem 1rem 0.25rem 1rem; background-color: var(--accent-primary); color: white; font-size: 0.95rem; font-weight: 500; }}
+    .chat-bubble-bot {{ display: flex; justify-content: flex-start; margin-bottom: 1rem; animation: fadeIn 0.3s ease-out; }}
+    .chat-bubble-bot > div {{ max-width: 80%; padding: 0.75rem 1rem; border-radius: 1rem 1rem 1rem 0.25rem; background-color: var(--card-bg); color: var(--text-primary); font-size: 0.95rem; border: 1px solid var(--border-color); }}
+    .stButton>button {{ background-color: var(--accent-primary) !important; color: white !important; border: none !important; border-radius: 0.5rem !important; font-weight: 500 !important; width: 100%; }}
+    .stButton>button:hover {{ opacity: 0.9 !important; }}
+    #MainMenu {{ visibility: hidden; }} footer {{ visibility: hidden; }} .viewerBadge_container__1QSob {{ display: none; }}
+    @keyframes fadeIn {{ from {{ opacity: 0; transform: translateY(8px); }} to {{ opacity: 1; transform: translateY(0); }} }}
+</style>
+""", unsafe_allow_html=True)
+
+# ==========================================
+# 🛡️ 3. THE BOUNCERS (Security & Guardrails)
+# ==========================================
 DISTRESS_TRIGGERS = {
-    "grief": ["passed away", "died", "funeral", "lost my", "she's gone", "he's gone"],
-    "panic": [
-        "can't breathe", "can't cope", "help now", "emergency", "overwhelmed",
-        "overwhelming", "overstimulating", "overstimulated", "it's too much",
-        "i can't handle it", "it's overflowing", "why can't it stop",
-        "it's becoming too much", "i can't handle it anymore"
-    ],
-    "self_harm": [
-        "hurt myself", "end it", "no way out", "kill myself", "kms", "giving up",
-        "gave up", "suicide", "commit", "i will never be enough",
-        "i will never be worthy", "i am always the problem", "i hate myself",
-        "i hate the person i became"
-    ],
-    "aggrieved": [
-        "nobody listens", "you people never", "sick of this", "it's always",
-        "its always", "fuck", "bitch", "ass", "asshole", "shit", "shitty",
-        "fucking", "kys", "kill yourself", "no one can never",
-        "why don't they ever", "it's all my fault"
-    ],
+    "grief": ["passed away", "died", "funeral", "mourning", "lost my husband", "lost my wife"],
+    "panic": ["can't breathe", "can't cope", "panic attack", "mental emergency"],
+    "self_harm": ["hurt myself", "end it", "no way out", "suicide"],
+    "aggrieved": ["nobody listens", "you people never", "sick of this", "scam", "ruined my life"]
 }
 
-ESCALATION_PATHS = {
-    "grief": "our Bereavement Support Partner",
-    "panic": "Emergency Services (911 / 999)",
-    "self_harm": "the National Crisis Hotline (203)",
-    "aggrieved": "our Client Relations Desk",
-}
-
-def detect_distress(msg: str) -> Optional[str]:
+def detect_distress(msg):
     m = msg.lower()
     for category, words in DISTRESS_TRIGGERS.items():
-        if any(w in m for w in words):
-            return category
+        if any(w in m for w in words): return category
     return None
 
-def break_glass_reply(category: str) -> str:
-    """Break-glass protocol. Short, empathetic, zero jargon."""
-    target = ESCALATION_PATHS.get(category, "a human agent")
-    if category == "grief":
-        return (f"I'm so sorry for your loss. You don't have to do anything right now. "
-                f"I'm connecting you with {target} — you don't have to handle this alone.")
-    if category == "self_harm":
-        return (f"Thank you for telling me. You matter. Please reach out to {target} "
-                f"right now — they will answer and they want to help.")
-    return f"I hear you. Let me connect you with {target} right now."
+def break_glass_reply(category):
+    if category == "grief": return f"I am so incredibly sorry for your loss. Please don't worry about business matters right now. Reach out to our human team at {CLIENT_EMAIL}. 🕊️"
+    if category in ["self_harm", "panic"]: return "I hear you, and your safety is the most important thing. Please step away and call a local emergency hotline immediately."
+    return f"I hear how frustrating this is. Let me connect you with a human right now. Please email {CLIENT_EMAIL}."
 
-# ==============================================================================
-# 🧭 AXIS 2 & 3: REGISTER + SERVICE (Systems Developer lead)
-# ==============================================================================
-def detect_service(msg: str) -> Optional[str]:
-    for key, data in SERVICES.items():
-        if any(kw in msg.lower() for kw in data["keywords"]):
-            return key
-    return None
-
-def detect_register(msg: str) -> str:
-    """Day 7: Figures out the user's mood so we can match their tone."""
-    m = msg.lower()
-    if any(w in m for w in ["died", "passed away", "funeral", "loss"]): return "bereaved"
-    if any(w in m for w in ["asap", "urgent", "emergency", "now"]):      return "urgent"
-    if any(w in m for w in ["regarding", "kindly", "please advise"]):    return "professional"
-    return "warm"
-
-# ==============================================================================
-# 🔒 DAY 11: PII REDACTION (Product Owner lead)
-# ==============================================================================
-# Privacy hygiene! We scrub personal info BEFORE it touches the AI brain.
-def redact_pii(text: str) -> str:
-    pii_patterns = {
-        "phone": r"\b\d{3}[-.\s]?\d{4}\b",
-        "email": r"\b[\w\.-]+@[\w\.-]+\.\w+\b",
-        "nin":   r"\b\d{9}\b",
-    }
-    for label, pattern in pii_patterns.items():
-        text = re.sub(pattern, f"[REDACTED:{label}]", text)
+def redact_pii(text):
+    text = re.sub(r'\b[\w\.-]+@[\w\.-]+\.\w+\b', '[REDACTED:EMAIL]', text)
+    text = re.sub(r'\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b', '[REDACTED:PHONE]', text)
+    text = re.sub(r'\b\d{9}\b', '[REDACTED:NIN]', text)
     return text
 
-# ==============================================================================
-# 📝 DAY 17: CONFIRMATION REGISTER (Scrum Master lead)
-# ==============================================================================
-# Day 17 was the "legal shield". We have to prove to the client that every
-# fact and tone was signed off. We log them here.
-FACT_REGISTER = []
-TONE_REGISTER = []
+def check_authority(user_message):
+    triggers = ["price", "cost", "fee", "salary", "contract terms", "my personal file", "my cv", "my application status", "am i eligible"]
+    return not any(word in user_message.lower() for word in triggers)
 
-def log_fact(topic: str, statement: str, verdict: str = "confirmed"):
-    FACT_REGISTER.append({"topic": topic, "statement": statement, "verdict": verdict})
+def detect_register(msg):
+    m = msg.lower()
+    if any(w in m for w in ["passed away", "died", "funeral", "loss", "mourning"]): return "bereaved"
+    if any(w in m for w in ["asap", "urgent", "emergency", "now", "immediately"]): return "urgent"
+    if any(w in m for w in ["regarding", "hereby", "kindly", "formal", "contract"]): return "professional"
+    return "warm"
 
-def log_tone(register: str, sample: str, verdict: str = "confirmed"):
-    TONE_REGISTER.append({"register": register, "sample": sample, "verdict": verdict})
+# ==========================================
+# 🧠 5. THE GEMINI BRAIN & THE MICROWAVE
+# ==========================================
+def setup_gemini():
+    """Connects to the Google Gemini Kitchen."""
+    api_key = st.secrets.get("GOOGLE_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    if api_key:
+        genai.configure(api_key=api_key)
+        # 📝 TEACHER NOTE: If your teacher specifically wants "gemini-3.1-flashlite", 
+        # just change the string below to whatever exact name they gave you!
+        return genai.GenerativeModel('gemini-1.5-flash') 
+    return None
 
-# Pre-loading the facts our Product Owner confirmed with the client
-log_fact("services_offered", "BPO, Recruitment, UWI, Logistics, Resilience", "confirmed")
-log_tone("warm", "Friendly, encouraging, simple words.", "confirmed")
-log_tone("bereaved", "Gentle condolences first. Max 2 sentences of facts.", "confirmed")
-
-# ==============================================================================
-# 🧠 AI BRAINS: GEMINI (Primary) + GROK (Fallback)
-# ==============================================================================
-# We use the camp-managed Gemini key as the main brain because it's stable.
-# Grok is the backup just in case Gemini hits a rate limit.
-
-# --- Primary: Gemini ---
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-gemini_model = None
-if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
-    gemini_model = genai.GenerativeModel("gemini-1.5-flash")
-    print("✅ Camp Gemini key loaded (PRIMARY).")
-else:
-    print("⚠️ No Gemini key found.")
-
-# --- Fallback: Grok ---
-GROK_API_KEY = os.getenv("GROK_API_KEY")
-grok_client = None
-if GROK_API_KEY:
-    grok_client = OpenAI(api_key=GROK_API_KEY, base_url="https://api.x.ai/v1")
-    print("✅ Grok key loaded (FALLBACK).")
-
-# ==============================================================================
-# 🛡️ DAY 9 & 18: safe_call & RESILIENCE (Systems Developer lead)
-# ==============================================================================
-# This was a game changer. Every external API call goes through this wrapper.
-# If the AI crashes, the user just gets a polite message instead of a 500 error.
-def safe_call(fn: Callable, *args, fallback: str = None, on_error=None, **kwargs):
-    try:
-        return fn(*args, **kwargs)
-    except Exception as exc:
-        if on_error: on_error(exc)
-        return fallback or "I hit a snag. Let me connect you with a human agent right now."
-
-# --- DAY 7: TCRDEI PROMPT TEMPLATE ---
-def build_tcrdei_prompt(service_data: dict, register: str) -> str:
-    tone_hints = {
-        "warm":         "TONE: Friendly, encouraging, simple words. Add a 💛 emoji.",
-        "professional": "TONE: Polished, concise, respectful. No slang.",
-        "urgent":       "TONE: Fast, direct, action-oriented. Use bullet points.",
-        "bereaved":     "TONE: Open with gentle condolences. Explain gently. Max 2 sentences of facts.",
+def build_system_prompt(register="warm"):
+    tone_instructions = {
+        "warm": "Be warm, encouraging, and use plain language. Add a 💛.",
+        "professional": "Be formal, concise, and professional. Use 'Dear user'.",
+        "urgent": "Be extremely concise, direct, and fast. No filler words. Add a ⚡.",
+        "bereaved": "Open with sincere condolences. Be gentle. Never more than 2 sentences of facts. Add a 🕊️."
     }
     return f"""
-[T] You are {BOT_NAME}, an AI Navigator for {CLIENT_NAME} in Dominica.
-[C] Context: The user is asking about {service_data['name']}.
-    Plain English: {service_data['plain']}.
-    Ethical rule: You are the GPS; the human is the driver. NEVER quote prices, guess facts, or handle personal data.
-[R] Reference: Always guide the user to book a human consultation for case-specific details.
-[D] Success = the user feels understood, informed on the basics, and safe.
-[E] Before answering, check: does this satisfy [D] and respect the ethical rule? If not, reroute.
-[I] If unsure, ask ONE clarifying question and iterate.
-{tone_hints.get(register, tone_hints['warm'])}
-"""
+    [T] TASK: You are the official AI Assistant for {CLIENT_NAME}, a consultancy in {CLIENT_LOCATION}.
+    [C] CONTEXT: You help with BPO, recruitment, corporate training (UWI Cave Hill), and logistics.
+    [D] DEFINED SUCCESS: The user feels guided. The bot is the GPS; the human is the driver.
+    [I] INPUTS: Register: {register}. Tone Rule: {tone_instructions.get(register, tone_instructions['warm'])}
+    STRICT RULES:
+    1. NEVER quote pricing. Say: "Our team will provide a custom quote. Please email {CLIENT_EMAIL}."
+    2. NEVER ask for personal candidate data.
+    3. Translate jargon into plain language.
+    """
 
-GROK_MODELS = ["grok-3", "grok-2-latest", "grok-2", "grok-beta"]
+def smart_mock_response(user_msg, register="warm"):
+    """🍲 THE MICROWAVE: Fakes a smart response if the API fails!"""
+    msg = user_msg.lower()
+    if any(w in msg for w in ["bpo", "outsource"]): text = "We specialize in outsourced business services in Dominica."
+    elif any(w in msg for w in ["training", "uwi"]): text = "We partner with UWI Cave Hill for corporate training."
+    elif any(w in msg for w in ["recruit", "hire"]): text = "Our talent acquisition team connects Dominican talent with employers."
+    else: text = f"I am the {CLIENT_NAME} AI. I can help with BPO, Recruitment, Training, or Logistics."
+    
+    if register == "bereaved": return "I am so sorry. Please don't worry about business right now. 🕊️"
+    elif register == "urgent": return f"{text.upper()} ⚡ EMAIL {CLIENT_EMAIL} NOW."
+    elif register == "professional": return f"Dear user — {text} Kindly contact {CLIENT_EMAIL}."
+    else: return f"{text} 💛"
 
-def call_gemini(prompt: str, user_msg: str) -> str:
-    full_prompt = f"{prompt}\n\nUser: {user_msg}"
-    return gemini_model.generate_content(full_prompt).text
-
-def call_grok(prompt: str, user_msg: str) -> str:
-    for model in GROK_MODELS:
+def safe_llm_call(user_msg, chat_history):
+    """The Manager: Tries Gemini. If it fails, uses the microwave."""
+    register = detect_register(user_msg)
+    system_prompt = build_system_prompt(register)
+    
+    # Gemini likes things simple. We will stitch the history and prompt into one big text block.
+    history_text = ""
+    for msg in chat_history[:-1]:
+        role = "User" if msg["role"] == "user" else "Bot"
+        history_text += f"{role}: {msg['content']}\n"
+        
+    full_prompt = f"{system_prompt}\n\n{history_text}User: {user_msg}\nBot:"
+    
+    model = setup_gemini()
+    if model:
         try:
-            response = grok_client.chat.completions.create(
-                model=model,
-                messages=[
-                    {"role": "system", "content": prompt},
-                    {"role": "user",   "content": user_msg},
-                ],
-                temperature=0.4,
-            )
-            return response.choices[0].message.content
-        except Exception:
-            continue
-    raise Exception("All Grok models failed")
+            response = model.generate_content(full_prompt)
+            return response.text
+        except Exception as e:
+            return smart_mock_response(user_msg, register) + f"\n\n*(Note: API fallback. Error: {type(e).__name__})*"
+    else:
+        return smart_mock_response(user_msg, register)
 
-def call_llm(prompt: str, user_msg: str) -> str:
-    """Resilience chain: Gemini (Primary) -> Grok (Fallback) -> Static."""
-    # Day 4 (translate jargon) + Day 11 (redact PII) combined!
-    safe_msg = redact_pii(translate_to_plain(user_msg))
+# ==========================================
+# 🖥️ 6. BUILDING THE SCREEN (Streamlit UI)
+# ==========================================
+st.set_page_config(page_title=f"{CLIENT_NAME} Assistant", page_icon="🇩🇲", layout="wide")
+if "messages" not in st.session_state: st.session_state.messages = []
 
-    # 1) Try Gemini
-    if gemini_model:
-        result = safe_call(call_gemini, prompt, safe_msg, fallback=None,
-                           on_error=lambda e: log_bug(user_msg, f"Gemini error: {e}", "gemini_api"))
-        if result: return result
+with st.sidebar:
+    st.markdown(f"""
+    <div style="display: flex; align-items: center; margin-bottom: 1.5rem;">
+        <div class="ods-badge">ODS</div>
+        <div>
+            <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--text-primary);">Outsource Development Studio</h3>
+            <p style="margin: 0; font-size: 0.8rem; color: var(--accent-primary); font-weight: 600;">Online • Ready to help</p>
+        </div>
+    </div>
+    <div style="margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6;">
+        <p>📍 {CLIENT_LOCATION}</p><p>📞 {CLIENT_PHONE}</p><p>✉️ {CLIENT_EMAIL}</p>
+    </div>
+    <div style="border-top: 1px solid var(--border-color); padding-top: 1rem;">
+        <p style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">📅 Book a Consultation</p>
+        <a href="mailto:{CLIENT_EMAIL}" style="display: block; text-align: center; padding: 0.6rem; background-color: var(--accent-primary); color: white; text-decoration: none; border-radius: 0.5rem; margin-bottom: 0.5rem;">Send Email</a>
+        <a href="{CLIENT_WEBSITE}" target="_blank" style="display: block; text-align: center; padding: 0.6rem; background-color: var(--bg-secondary); color: var(--text-primary); text-decoration: none; border-radius: 0.5rem; border: 1px solid var(--border-color);">Visit Website</a>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.divider()
+    if st.button("Cycle Colors 🔄"):
+        st.session_state.theme_index = (st.session_state.theme_index + 1) % len(THEMES)
+        st.rerun()
 
-    # 2) Try Grok
-    if grok_client:
-        result = safe_call(call_grok, prompt, safe_msg, fallback=None,
-                           on_error=lambda e: log_bug(user_msg, f"Grok error: {e}", "grok_api"))
-        if result: return result
+st.markdown(f"<h2 style='color: var(--text-primary);'>🤖 Welcome to {CLIENT_NAME}</h2>", unsafe_allow_html=True)
 
-    # 3) Static fallback
-    return f"I'm having trouble connecting right now. Please email {CLIENT_EMAIL} or use our booking form."
+for message in st.session_state.messages:
+    if message["role"] == "user":
+        st.markdown(f'<div class="chat-bubble-user"><div>{message["content"]}</div></div>', unsafe_allow_html=True)
+    else:
+        st.markdown(f'<div class="chat-bubble-bot"><div>{message["content"]}</div></div>', unsafe_allow_html=True)
 
-# ==============================================================================
-# 📊 LOGGING: BUGS (Day 9) + RATINGS (Client Request)
-# ==============================================================================
-RATINGS_FILE = "ratings.csv"
-BUG_LOG_FILE = "bug_log.csv"
+# ==========================================
+# 🎮 7. THE GAME LOOP
+# ==========================================
+if prompt := st.chat_input("Ask about our services..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    
+    distress_category = detect_distress(prompt)
+    if distress_category:
+        st.session_state.messages.append({"role": "assistant", "content": break_glass_reply(distress_category)})
+        st.rerun()
 
-def init_ratings_log():
-    if not os.path.exists(RATINGS_FILE):
-        with open(RATINGS_FILE, "w", newline="") as f:
-            csv.writer(f).writerow(
-                ["timestamp", "message_id", "session_id", "rating", "comment", "bot_response_snippet"]
-            )
-init_ratings_log()
+    if not check_authority(prompt):
+        st.session_state.messages.append({"role": "assistant", "content": f"For questions regarding pricing or personal files, please reach out to **{CLIENT_EMAIL}**."})
+        st.rerun()
 
-def log_rating(message_id: str, session_id: str, rating: str, comment: str, bot_response: str):
-    with open(RATINGS_FILE, "a", newline="") as f:
-        csv.writer(f).writerow([
-            datetime.utcnow().isoformat(timespec="seconds"),
-            message_id, session_id, rating, comment, bot_response[:150],
-        ])
-
-def log_bug(input_str: str, error: str, axis_tag: str = "none"):
-    try:
-        file_exists = os.path.exists(BUG_LOG_FILE)
-        with open(BUG_LOG_FILE, "a", newline="") as f:
-            w = csv.writer(f)
-            if not file_exists:
-                w.writerow(["timestamp", "input", "error", "axis_tag"])
-            w.writerow([datetime.utcnow().isoformat(timespec="seconds"),
-                        input_str[:80], error, axis_tag])
-    except Exception as e:
-        print(f"Could not write bug log: {e}")
-
-# ==============================================================================
-# 🧭 DAY 14: AGENTIC JOURNEY STATE MACHINE
-# ==============================================================================
-JOURNEY_STEPS = ["greeting", "identify_need", "collect_facts", "offer_next_step", "confirm_close"]
-session_states: Dict[str, int] = {}
-
-# ==============================================================================
-# 🌐 PYDANTIC MODELS
-# ==============================================================================
-class ChatRequest(BaseModel):
-    message: str
-    session_id: str = "default"
-
-class RatingRequest(BaseModel):
-    message_id: str
-    session_id: str
-    rating: str
-    response_text: str
-    comment: Optional[str] = ""
-
-# ==============================================================================
-# 🌐 API ENDPOINTS
-# ==============================================================================
-@app.post("/chat")
-async def chat(request: ChatRequest):
-    msg = request.message
-    session_id = request.session_id
-    msg_id = str(uuid.uuid4())
-
-    # 1) BREAK-GLASS (Day 14)
-    distress = detect_distress(msg)
-    if distress:
-        return {
-            "message_id": msg_id,
-            "response": break_glass_reply(distress),
-            "escalated": True, "distress": True,
-            "register": "bereaved", "service": None,
-        }
-
-    # 2) AUTHORITY (Day 6)
-    if not check_authority(msg):
-        return {
-            "message_id": msg_id,
-            "response": (f"I appreciate you reaching out! 🙏 For pricing, personal data, or "
-                         f"specific case details, our team needs to handle this personally. "
-                         f"Please email {CLIENT_EMAIL} or use our booking form."),
-            "escalated": True, "distress": False,
-            "register": "professional", "service": None,
-        }
-
-    # 3) JOURNEY (Day 14)
-    current_step = session_states.get(session_id, 0)
-    if current_step < len(JOURNEY_STEPS) - 1:
-        session_states[session_id] = current_step + 1
-
-    # 4) CLASSIFY (Day 7 & 8)
-    register = detect_register(msg)
-    service_key = detect_service(msg)
-    svc = SERVICES.get(service_key, {
-        "name": "our services",
-        "plain": "Please tell me which service you'd like help with.",
-    })
-
-    # 5) GENERATE
-    prompt = build_tcrdei_prompt(svc, register)
-    response_text = call_llm(prompt, msg)
-
-    return {
-        "message_id": msg_id,
-        "response": response_text,
-        "escalated": False, "distress": False,
-        "register": register, "service": service_key,
-        "journey_step": JOURNEY_STEPS[session_states.get(session_id, 0)],
-    }
-
-@app.post("/rate")
-async def rate_message(request: RatingRequest):
-    try:
-        log_rating(
-            request.message_id, request.session_id, request.rating,
-            request.comment or "", request.response_text,
-        )
-        return {"status": "success", "message": "Feedback recorded. Thank you!"}
-    except Exception as e:
-        log_bug("rating", str(e), "none")
-        raise HTTPException(status_code=500, detail="Could not save rating.")
-
-@app.get("/", response_class=HTMLResponse)
-async def root():
-    try:
-        with open("index.html", "r", encoding="utf-8") as f:
-            return HTMLResponse(content=f.read(), status_code=200)
-    except FileNotFoundError:
-        return HTMLResponse(
-            "<h1>Nexa AI Backend is Running 🤖</h1><p>index.html not found in root directory.</p>",
-            status_code=404,
-        )
+    safe_prompt = redact_pii(prompt)
+    api_history = st.session_state.messages[:-1] + [{"role": "user", "content": safe_prompt}]
+    
+    with st.spinner("Consulting the knowledge base..."):
+        response_text = safe_llm_call(safe_prompt, api_history)
+        
+    st.session_state.messages.append({"role": "assistant", "content": response_text})
+    st.rerun()
