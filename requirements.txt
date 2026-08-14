@@ -1,5 +1,5 @@
-   fastapi
-   uvicorn
-   google-generativeai
-   python-dotenv
-   openai
+fastapi
+uvicorn
+google-genai
+python-dotenv
+openai
