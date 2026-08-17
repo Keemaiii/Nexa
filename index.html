@@ -1,760 +1,975 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nexa | Outsource Development Studio</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Rajdhani:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nexa | Outsource Development Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Rajdhani:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0f0f;
+  --text: #f5f5f5;
+  --card: #1a1a1a;
+  --card-text: #f5f5f5;
+  --primary: #dc2626;
+  --primary-text: #ffffff;
+  --secondary: #2a2a2a;
+  --secondary-text: #d4d4d4;
+  --muted: #3a3a3a;
+  --muted-text: #9ca3af;
+  --accent: #ef4444;
+  --border: #2f2f2f;
+  --ring: #dc2626;
+  --radius: 0.5rem;
+}
+.light-mode {
+  --bg: #ffffff;
+  --text: #0f0f0f;
+  --card: #f5f5f5;
+  --card-text: #0f0f0f;
+  --primary: #dc2626;
+  --primary-text: #ffffff;
+  --secondary: #e5e5e5;
+  --secondary-text: #333333;
+  --muted: #d4d4d4;
+  --muted-text: #666666;
+  --border: #e5e5e5;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+.chat-container {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+.header {
+  padding: 1.25rem 2rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+}
+.header-banner {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  justify-content: flex-start;
+}
+.book-header-btn {
+  background: var(--primary);
+  color: var(--primary-text);
+  border: none;
+  padding: 0.55rem 1.25rem;
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+.book-header-btn:hover {
+  background: var(--accent);
+  transform: translateY(-1px);
+}
+.clear-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted-text);
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+  white-space: nowrap;
+}
+.clear-btn:hover {
+  background: var(--secondary);
+  color: var(--text);
+}
+.header-center {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.logo-link {
+  text-decoration: none;
+  display: block;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.logo-link:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+.company-logo {
+  width: 180px;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  justify-content: flex-end;
+}
+.status {
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  position: relative;
+}
+.status-dot.pulse-ring::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  animation: pulse-ring 1.5s ease-out infinite;
+}
+.theme-toggle {
+  background: var(--secondary);
+  border: 2px solid var(--border);
+  color: var(--text);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  flex-shrink: 0;
+}
+.theme-toggle:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: scale(1.05);
+}
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  scroll-behavior: smooth;
+}
+.messages::-webkit-scrollbar { width: 6px; }
+.messages::-webkit-scrollbar-track { background: transparent; }
+.messages::-webkit-scrollbar-thumb {
+  background: var(--muted);
+  border-radius: 3px;
+}
+.messages::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+.message {
+  display: flex;
+  gap: 1.25rem;
+  max-width: 90%;
+  animation: slide-up 0.25s ease forwards;
+}
+.message.bot { align-self: flex-start; }
+.message.user { align-self: flex-end; flex-direction: row-reverse; }
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+.bubble {
+  background: var(--card);
+  color: var(--card-text);
+  padding: 1.125rem 1.5rem;
+  border-radius: calc(var(--radius) * 2);
+  border: 1px solid var(--border);
+  line-height: 1.6;
+  font-size: 1rem;
+}
+.user .bubble {
+  background: var(--primary);
+  color: var(--primary-text);
+  border-color: var(--primary);
+}
+.voice-btn {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: 0.2s;
+  padding: 0.5rem;
+}
+.voice-btn:hover {
+  opacity: 1;
+  color: var(--primary);
+}
+.chips-container { padding: 0 2.5rem 1.5rem; }
+.chips-label {
+  color: var(--muted-text);
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+.chips {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.chip {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.625rem 1.25rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.chip:hover {
+  background: var(--primary);
+  color: var(--primary-text);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+.input-area {
+  padding: 1.75rem 2.5rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 1rem;
+  background: var(--card);
+  align-items: center;
+}
+.input-wrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.mic-btn {
+  position: absolute;
+  left: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: var(--muted-text);
+  transition: 0.2s;
+}
+.mic-btn:hover { color: var(--primary); }
+input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 1rem 1.25rem 1rem 3rem;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--ring);
+}
+input::placeholder { color: var(--muted-text); }
+.send-btn {
+  background: var(--primary);
+  color: var(--primary-text);
+  border: none;
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.send-btn:hover { background: var(--accent); }
+.send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    <style>
-        :root {
-            --bg: #0f0f0f;
-            --text: #f5f5f5;
-            --card: #1a1a1a;
-            --card-text: #f5f5f5;
-            --primary: #dc2626;
-            --primary-text: #ffffff;
-            --secondary: #2a2a2a;
-            --secondary-text: #d4d4d4;
-            --muted: #3a3a3a;
-            --muted-text: #9ca3af;
-            --accent: #ef4444;
-            --border: #2f2f2f;
-            --ring: #dc2626;
-            --radius: 0.5rem;
-        }
+/* ============================================================
+   ⭐ NEW: RATE-NEXA BAR (sits right above the footer disclaimer)
+   ============================================================ */
+.rate-bar {
+  padding: 0.85rem 2.5rem;
+  border-top: 1px solid var(--border);
+  background: var(--card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+.rate-bar-label {
+  font-size: 0.85rem;
+  color: var(--muted-text);
+  font-family: 'JetBrains Mono', monospace;
+}
+.rate-bar-btn {
+  background: var(--secondary);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 0.5rem 1.1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.rate-bar-btn:hover {
+  background: var(--primary);
+  color: var(--primary-text);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
 
-        .light-mode {
-            --bg: #ffffff;
-            --text: #0f0f0f;
-            --card: #f5f5f5;
-            --card-text: #0f0f0f;
-            --primary: #dc2626;
-            --primary-text: #ffffff;
-            --secondary: #e5e5e5;
-            --secondary-text: #333333;
-            --muted: #d4d4d4;
-            --muted-text: #666666;
-            --border: #e5e5e5;
-        }
+.chat-footer {
+  padding: 0.75rem 2rem;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--muted-text);
+  border-top: 1px solid var(--border);
+  background: var(--card);
+  line-height: 1.4;
+}
+.chat-footer strong {
+  color: var(--text);
+}
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+.modal-content {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) * 2);
+  width: 90%;
+  max-width: 700px;
+  height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.modal-header {
+  padding: 1.25rem 2rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-header h3 {
+  margin: 0;
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.5rem;
+}
+.close-modal {
+  background: none;
+  border: none;
+  color: var(--muted-text);
+  font-size: 1.75rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.close-modal:hover { color: var(--primary); }
+.modal-body { flex: 1; }
+.modal-body iframe { width: 100%; height: 100%; border: none; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+/* ============================================================
+   ⭐ NEW: 5-STAR RATING MODAL (small popup, not full-height
+   like the booking modal, since it only needs a few stars +
+   an optional comment box)
+   ============================================================ */
+.rating-modal-content {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) * 2);
+  width: 90%;
+  max-width: 420px;
+  height: auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  text-align: center;
+}
+.rating-modal-content h3 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.4rem;
+  color: var(--text);
+}
+.rating-modal-content p {
+  font-size: 0.9rem;
+  color: var(--muted-text);
+}
+/* The 5 stars, laid out in a row. Each star is just a big emoji
+   character sitting inside a clickable button. */
+.star-row {
+  display: flex;
+  gap: 0.4rem;
+  font-size: 2.25rem;
+}
+.star-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  filter: grayscale(100%) opacity(0.5); /* dim/gray until selected */
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+.star-btn:hover {
+  transform: scale(1.15);
+}
+/* When JavaScript adds the "selected" class to a star, it turns
+   full-color and slightly bigger, so the user can see their pick. */
+.star-btn.selected {
+  filter: none;
+  transform: scale(1.1);
+}
+.rating-comment {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-family: 'Inter', sans-serif;
+  resize: none;
+  outline: none;
+}
+.rating-comment:focus { border-color: var(--primary); }
+.rating-submit-btn {
+  background: var(--primary);
+  color: var(--primary-text);
+  border: none;
+  padding: 0.8rem 1.75rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: 0.2s;
+  width: 100%;
+}
+.rating-submit-btn:hover { background: var(--accent); }
+.rating-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.rating-thanks {
+  font-size: 0.95rem;
+  color: var(--text);
+  font-weight: 600;
+}
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-
-        .chat-container {
-            width: 100%;
-            max-width: 900px;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            border-left: 1px solid var(--border);
-            border-right: 1px solid var(--border);
-        }
-
-        .header {
-            padding: 1.25rem 2rem;
-            border-bottom: 1px solid var(--border);
-            background: var(--card);
-        }
-
-        /* 🎯 NEW SINGLE BANNER ROW */
-        .header-banner {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* LEFT SIDE: Book Consultation + Clear Chat */
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            flex: 1;
-            justify-content: flex-start;
-        }
-
-        .book-header-btn {
-            background: var(--primary);
-            color: var(--primary-text);
-            border: none;
-            padding: 0.55rem 1.25rem;
-            border-radius: var(--radius);
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            white-space: nowrap;
-        }
-        .book-header-btn:hover {
-            background: var(--accent);
-            transform: translateY(-1px);
-        }
-
-        .clear-btn {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--muted-text);
-            padding: 0.5rem 0.9rem;
-            border-radius: var(--radius);
-            font-size: 0.8rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: 0.2s;
-            white-space: nowrap;
-        }
-        .clear-btn:hover { 
-            background: var(--secondary); 
-            color: var(--text); 
-        }
-
-        /* CENTER: Medium Logo */
-        .header-center {
-            flex: 0 0 auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .logo-link {
-            text-decoration: none;
-            display: block;
-            transition: transform 0.2s ease, filter 0.2s ease;
-        }
-        .logo-link:hover {
-            transform: scale(1.05);
-            filter: brightness(1.1);
-        }
-
-        .company-logo {
-            width: 180px;
-            height: auto;
-            display: block;
-            object-fit: contain;
-        }
-
-        /* RIGHT SIDE: Status + Theme Toggle */
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex: 1;
-            justify-content: flex-end;
-        }
-
-        .status {
-            color: var(--accent);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            white-space: nowrap;
-        }
-        
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--accent);
-            border-radius: 50%;
-            position: relative;
-        }
-        
-        .status-dot.pulse-ring::after {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: 50%;
-            border: 2px solid var(--accent);
-            animation: pulse-ring 1.5s ease-out infinite;
-        }
-
-        .theme-toggle {
-            background: var(--secondary);
-            border: 2px solid var(--border);
-            color: var(--text);
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.3rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            flex-shrink: 0;
-        }
-        .theme-toggle:hover { 
-            border-color: var(--primary); 
-            color: var(--primary);
-            transform: scale(1.05);
-        }
-
-        /* REST OF STYLES REMAIN THE SAME */
-        .messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 2.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1.75rem;
-            scroll-behavior: smooth;
-        }
-        
-        .messages::-webkit-scrollbar { width: 6px; }
-        .messages::-webkit-scrollbar-track { background: transparent; }
-        .messages::-webkit-scrollbar-thumb { 
-            background: var(--muted); 
-            border-radius: 3px; 
-        }
-        .messages::-webkit-scrollbar-thumb:hover { background: var(--primary); }
-
-        .message {
-            display: flex;
-            gap: 1.25rem;
-            max-width: 90%;
-            animation: slide-up 0.25s ease forwards;
-        }
-        .message.bot { align-self: flex-start; }
-        .message.user { align-self: flex-end; flex-direction: row-reverse; }
-
-        .avatar {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: var(--card);
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.35rem;
-            flex-shrink: 0;
-            object-fit: cover;
-        }
-
-        .bubble {
-            background: var(--card);
-            color: var(--card-text);
-            padding: 1.125rem 1.5rem;
-            border-radius: calc(var(--radius) * 2);
-            border: 1px solid var(--border);
-            line-height: 1.6;
-            font-size: 1rem;
-        }
-        .user .bubble {
-            background: var(--primary);
-            color: var(--primary-text);
-            border-color: var(--primary);
-        }
-
-        .voice-btn {
-            background: none;
-            border: none;
-            font-size: 1.1rem;
-            cursor: pointer;
-            opacity: 0.5;
-            transition: 0.2s;
-            padding: 0.5rem;
-        }
-        .voice-btn:hover { 
-            opacity: 1; 
-            color: var(--primary); 
-        }
-
-        .chips-container { padding: 0 2.5rem 1.5rem; }
-        .chips-label { 
-            color: var(--muted-text); 
-            font-size: 0.875rem; 
-            font-weight: 500; 
-            margin-bottom: 1rem; 
-            font-family: 'JetBrains Mono', monospace; 
-        }
-        .chips { 
-            display: flex; 
-            gap: 0.75rem; 
-            flex-wrap: wrap; 
-        }
-        .chip {
-            background: var(--card);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 0.625rem 1.25rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .chip:hover { 
-            background: var(--primary); 
-            color: var(--primary-text); 
-            border-color: var(--primary); 
-            transform: translateY(-2px);
-        }
-
-        .input-area {
-            padding: 1.75rem 2.5rem;
-            border-top: 1px solid var(--border);
-            display: flex;
-            gap: 1rem;
-            background: var(--card);
-            align-items: center;
-        }
-        .input-wrapper { 
-            flex: 1; 
-            position: relative; 
-            display: flex; 
-            align-items: center; 
-        }
-        
-        .mic-btn {
-            position: absolute;
-            left: 1rem;
-            background: none;
-            border: none;
-            font-size: 1.25rem;
-            cursor: pointer;
-            color: var(--muted-text);
-            transition: 0.2s;
-        }
-        .mic-btn:hover { color: var(--primary); }
-        
-        input {
-            width: 100%;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 1rem 1.25rem 1rem 3rem;
-            border-radius: var(--radius);
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s ease;
-        }
-        input:focus { 
-            border-color: var(--primary); 
-            box-shadow: 0 0 0 2px var(--ring);
-        }
-        input::placeholder { color: var(--muted-text); }
-        
-        .send-btn {
-            background: var(--primary);
-            color: var(--primary-text);
-            border: none;
-            padding: 1rem 1.5rem;
-            border-radius: var(--radius);
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .send-btn:hover { background: var(--accent); }
-        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        .chat-footer {
-            padding: 0.75rem 2rem;
-            text-align: center;
-            font-size: 0.75rem;
-            color: var(--muted-text);
-            border-top: 1px solid var(--border);
-            background: var(--card);
-            line-height: 1.4;
-        }
-        .chat-footer strong {
-            color: var(--text);
-        }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            backdrop-filter: blur(4px);
-        }
-        .modal-content {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: calc(var(--radius) * 2);
-            width: 90%;
-            max-width: 700px;
-            height: 85vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .modal-header {
-            padding: 1.25rem 2rem;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .modal-header h3 { 
-            margin: 0; 
-            color: var(--text); 
-            font-family: 'Rajdhani', sans-serif; 
-            font-size: 1.5rem; 
-        }
-        .close-modal {
-            background: none; 
-            border: none; 
-            color: var(--muted-text); 
-            font-size: 1.75rem; 
-            cursor: pointer; 
-            line-height: 1;
-        }
-        .close-modal:hover { color: var(--primary); }
-        .modal-body { flex: 1; }
-        .modal-body iframe { width: 100%; height: 100%; border: none; }
-
-        /* 📱 MOBILE RESPONSIVE */
-        @media (max-width: 768px) {
-            .header { padding: 1rem 1.25rem; }
-            .company-logo { width: 120px; }
-            .book-header-btn { padding: 0.45rem 0.9rem; font-size: 0.78rem; }
-            .clear-btn { padding: 0.4rem 0.7rem; font-size: 0.75rem; }
-            .theme-toggle { width: 38px; height: 38px; font-size: 1.1rem; }
-            .status { font-size: 0.7rem; }
-            .header-right { gap: 0.6rem; }
-            .messages { padding: 1.5rem; gap: 1.25rem; }
-            .message { max-width: 95%; gap: 0.75rem; }
-            .avatar { width: 36px; height: 36px; font-size: 1.15rem; }
-            .bubble { padding: 1rem 1.25rem; font-size: 0.925rem; }
-            .chips-container { padding: 0 1.5rem 1rem; }
-            .chip { padding: 0.5rem 1rem; font-size: 0.85rem; }
-            .input-area { padding: 1.25rem 1.5rem; }
-            input { padding: 0.875rem 1rem 0.875rem 2.75rem; }
-            .chat-footer { padding: 0.75rem 1rem; font-size: 0.7rem; }
-        }
-
-        @media (max-width: 480px) {
-            .clear-btn { display: none; }
-            .status { display: none; }
-        }
-
-        @keyframes pulse-ring {
-            0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(1.6); opacity: 0; }
-        }
-        @keyframes slide-up {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+/* 📱 MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+  .header { padding: 1rem 1.25rem; }
+  .company-logo { width: 120px; }
+  .book-header-btn { padding: 0.45rem 0.9rem; font-size: 0.78rem; }
+  .clear-btn { padding: 0.4rem 0.7rem; font-size: 0.75rem; }
+  .theme-toggle { width: 38px; height: 38px; font-size: 1.1rem; }
+  .status { font-size: 0.7rem; }
+  .header-right { gap: 0.6rem; }
+  .messages { padding: 1.5rem; gap: 1.25rem; }
+  .message { max-width: 95%; gap: 0.75rem; }
+  .avatar { width: 36px; height: 36px; font-size: 1.15rem; }
+  .bubble { padding: 1rem 1.25rem; font-size: 0.925rem; }
+  .chips-container { padding: 0 1.5rem 1rem; }
+  .chip { padding: 0.5rem 1rem; font-size: 0.85rem; }
+  .input-area { padding: 1.25rem 1.5rem; }
+  input { padding: 0.875rem 1rem 0.875rem 2.75rem; }
+  .chat-footer { padding: 0.75rem 1rem; font-size: 0.7rem; }
+  .rate-bar { padding: 0.65rem 1.5rem; }
+  .star-row { font-size: 1.9rem; }
+}
+@media (max-width: 480px) {
+  .clear-btn { display: none; }
+  .status { display: none; }
+}
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
 </head>
 <body>
-    <div class="chat-container">
-        <!-- 🎯 NEW HEADER BANNER -->
-        <div class="header">
-            <div class="header-banner">
-                
-                <!-- LEFT: Book Consultation + Clear Chat -->
-                <div class="header-left">
-                    <button class="book-header-btn" onclick="openModal()">
-                        📅 Book Consultation
-                    </button>
-                    <button class="clear-btn" onclick="clearChat()">Clear</button>
-                </div>
-                
-                <!-- CENTER: Medium Logo -->
-                <div class="header-center">
-                    <a href="https://outsourcedevelopment.org" target="_blank" rel="noopener noreferrer" class="logo-link" title="Visit Outsource Development Studio Website">
-                        <img src="/assets/logo.png" 
-                             alt="Outsource Development Studio Logo" 
-                             class="company-logo"
-                             onerror="this.style.display='none';">
-                    </a>
-                </div>
-                
-                <!-- RIGHT: Status + Theme Toggle -->
-                <div class="header-right">
-                    <div class="status">
-                        <span class="status-dot pulse-ring"></span>
-                        ONLINE
-                    </div>
-                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme" id="themeBtn">🌙</button>
-                </div>
-                
-            </div>
+<div class="chat-container">
+  <!-- HEADER BANNER -->
+  <div class="header">
+    <div class="header-banner">
+      <div class="header-left">
+        <button class="book-header-btn" onclick="openModal()">📅 Book Consultation</button>
+        <button class="clear-btn" onclick="clearChat()">Clear</button>
+      </div>
+      <div class="header-center">
+        <a href="https://outsourcedevelopment.org" target="_blank" rel="noopener noreferrer" class="logo-link" title="Visit Outsource Development Studio Website">
+          <img src="/assets/logo.png" alt="Outsource Development Studio Logo" class="company-logo" onerror="this.style.display='none';">
+        </a>
+      </div>
+      <div class="header-right">
+        <div class="status">
+          <span class="status-dot pulse-ring"></span>
+          ONLINE
         </div>
+        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme" id="themeBtn">🌙</button>
+      </div>
+    </div>
+  </div>
 
-        <div class="messages chat-scroll" id="messages">
-            <div class="message bot">
-                <img src="/assets/bot-avatar.png" 
-                     alt="Nexa Bot" 
-                     class="avatar"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                <div class="avatar" style="display:none;">🤖</div>
-                
-                <div class="bubble">Hello! I'm <strong>Nexa</strong>. I can help you with Outsource Development Studio's Services. What would you like to know?</div>
-            </div>
-        </div>
+  <div class="messages chat-scroll" id="messages">
+    <div class="message bot">
+      <img src="/assets/bot-avatar.png" alt="Nexa Bot" class="avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+      <div class="avatar" style="display:none;">🤖</div>
+      <div class="bubble">Hello! I'm <strong>Nexa</strong>. I can help you with Outsource Development Studio's Services. What would you like to know?</div>
+    </div>
+  </div>
 
-        <div class="chips-container">
-            <div class="chips-label">Try asking:</div>
-            <div class="chips">
-                <button class="chip" onclick="send('What is BPO and how can it help my business?')">💼 What is BPO?</button>
-                <button class="chip" onclick="send('Tell me about recruitment and EOR services')">👥 Recruitment</button>
-                <button class="chip" onclick="send('What training seminars do you offer?')">🎓 UWI Training</button>
-                <button class="chip" onclick="send('What logistics services do you provide?')">🚚 Logistics</button>
-                <button class="chip" onclick="send('Tell me about resilience planning')">🌱 Resilience</button>
-            </div>
-        </div>
+  <div class="chips-container">
+    <div class="chips-label">Try asking:</div>
+    <div class="chips">
+      <button class="chip" onclick="send('What is BPO and how can it help my business?')">💼 What is BPO?</button>
+      <button class="chip" onclick="send('Tell me about recruitment and EOR services')">👥 Recruitment</button>
+      <button class="chip" onclick="send('What training seminars do you offer?')">🎓 UWI Training</button>
+      <button class="chip" onclick="send('What logistics services do you provide?')">🚚 Logistics</button>
+      <button class="chip" onclick="send('Tell me about resilience planning')">🌱 Resilience</button>
+    </div>
+  </div>
 
-        <div class="input-area">
-            <div class="input-wrapper">
-                <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="Speak">🎙️</button>
-                <input type="text" id="input" placeholder="Message Nexa..." onkeypress="if(event.key==='Enter') sendMsg()">
-            </div>
-            <button class="send-btn" onclick="sendMsg()" id="sendBtn">Send</button>
-        </div>
+  <div class="input-area">
+    <div class="input-wrapper">
+      <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="Speak">🎙️</button>
+      <input type="text" id="input" placeholder="Message Nexa..." onkeypress="if(event.key==='Enter') sendMsg()">
+    </div>
+    <button class="send-btn" onclick="sendMsg()" id="sendBtn">Send</button>
+  </div>
 
-        <div class="chat-footer">
-            <p>⚠️ <strong>Disclaimer:</strong> AI is not always accurate and humans must verify the information. | 🇩🇲 <strong>ECCU Camp 2026</strong></p>
-        </div>
+  <!-- ============================================================
+       ⭐ NEW: RATE-NEXA BAR
+       This sits at the very bottom of the chat, right above the
+       disclaimer footer. Clicking the button opens the star-rating
+       popup below.
+       ============================================================ -->
+  <div class="rate-bar">
+    <span class="rate-bar-label">Enjoying Nexa?</span>
+    <button class="rate-bar-btn" onclick="openRatingModal()">⭐ Rate this chatbot</button>
+  </div>
+
+  <div class="chat-footer">
+    <p>⚠️ <strong>Disclaimer:</strong> AI is not always accurate and humans must verify the information. | 🇩🇲 <strong>ECCU Camp 2026</strong></p>
+  </div>
+</div>
+
+<!-- 📅 JOTFORM MODAL -->
+<div class="modal-overlay" id="jotformModal" onclick="if(event.target===this) closeModal()">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>📅 Book a Consultation</h3>
+      <button class="close-modal" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <iframe src="https://form.jotform.com/262113198505050" title="Jotform Booking"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     ⭐ NEW: 5-STAR RATING MODAL
+     A small popup (not the big booking-form size) with 5 clickable
+     star buttons, an optional comment box, and a submit button.
+     ============================================================ -->
+<div class="modal-overlay" id="ratingModal" onclick="if(event.target===this) closeRatingModal()">
+  <div class="rating-modal-content">
+    <button class="close-modal" style="align-self:flex-end; margin-bottom:-1rem;" onclick="closeRatingModal()">×</button>
+    <h3>Rate your experience</h3>
+    <p>How helpful was Nexa today? Tap a star from 1 (not helpful) to 5 (very helpful).</p>
+
+    <!-- The 5 star buttons. Each one calls selectStar(N) with its own
+         number (1 through 5) when clicked. -->
+    <div class="star-row" id="starRow">
+      <button class="star-btn" onclick="selectStar(1)" data-value="1">⭐</button>
+      <button class="star-btn" onclick="selectStar(2)" data-value="2">⭐</button>
+      <button class="star-btn" onclick="selectStar(3)" data-value="3">⭐</button>
+      <button class="star-btn" onclick="selectStar(4)" data-value="4">⭐</button>
+      <button class="star-btn" onclick="selectStar(5)" data-value="5">⭐</button>
     </div>
 
-    <!-- 📅 JOTFORM MODAL -->
-    <div class="modal-overlay" id="jotformModal" onclick="if(event.target===this) closeModal()">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>📅 Book a Consultation</h3>
-                <button class="close-modal" onclick="closeModal()">×</button>
-            </div>
-            <div class="modal-body">
-                <iframe src="https://form.jotform.com/262113198505050" title="Jotform Booking"></iframe>
-            </div>
-        </div>
+    <textarea class="rating-comment" id="ratingComment" rows="3" placeholder="Optional: tell us more (optional)"></textarea>
+
+    <button class="rating-submit-btn" id="ratingSubmitBtn" onclick="submitRating()" disabled>Submit Rating</button>
+
+    <!-- Hidden until a rating is successfully submitted -->
+    <div class="rating-thanks" id="ratingThanks" style="display:none;">🙏 Thanks for your feedback!</div>
+  </div>
+</div>
+
+<script>
+const API_URL = "/chat";
+let isListening = false;
+let recognition;
+
+// ============================================================
+// ⭐ NEW: RATING STATE
+// ============================================================
+// A "session_id" is just a random ID we make up once per visitor,
+// so the backend can (loosely) tell different visitors apart.
+// crypto.randomUUID() generates something like:
+//   "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+const sessionId = crypto.randomUUID();
+
+// These track the star the user has picked (starts at 0 = none
+// picked yet) and info about the LAST bot reply, so we can send
+// something meaningful to the /rate endpoint even though this is a
+// simple "rate the chatbot overall" button rather than a per-message
+// thumbs-up/down.
+let selectedStars = 0;
+let lastBotMessageId = "overall-session";
+let lastBotResponseText = "";
+
+function openRatingModal() {
+  document.getElementById("ratingModal").style.display = "flex";
+}
+
+function closeRatingModal() {
+  document.getElementById("ratingModal").style.display = "none";
+}
+
+// Called when the user clicks one of the 5 star buttons.
+function selectStar(value) {
+  selectedStars = value;
+
+  // Loop through every star button and turn ON the "selected" class
+  // (full color) for stars 1 through `value`, and turn it OFF for
+  // any stars after that. This is what makes clicking star #3 light
+  // up stars 1, 2, AND 3 — just like a real star-rating widget.
+  const stars = document.querySelectorAll("#starRow .star-btn");
+  stars.forEach((starBtn) => {
+    const starValue = parseInt(starBtn.getAttribute("data-value"));
+    if (starValue <= value) {
+      starBtn.classList.add("selected");
+    } else {
+      starBtn.classList.remove("selected");
+    }
+  });
+
+  // Now that at least one star is picked, let the user actually
+  // submit (the button starts out disabled).
+  document.getElementById("ratingSubmitBtn").disabled = false;
+}
+
+// Called when the user clicks "Submit Rating".
+async function submitRating() {
+  if (selectedStars === 0) return; // safety check, shouldn't happen since button is disabled
+
+  const submitBtn = document.getElementById("ratingSubmitBtn");
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Sending...";
+
+  const comment = document.getElementById("ratingComment").value.trim();
+
+  try {
+    // This sends our rating to the /rate endpoint already built into
+    // main.py, which saves it into ratings.csv on the server.
+    await fetch("/rate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message_id: lastBotMessageId,
+        session_id: sessionId,
+        rating: String(selectedStars),   // e.g. "4" (out of 5 stars)
+        response_text: lastBotResponseText,
+        comment: comment,
+      }),
+    });
+
+    // Hide the star row + submit button, show a thank-you message,
+    // then auto-close the popup after a couple seconds.
+    document.getElementById("ratingSubmitBtn").style.display = "none";
+    document.getElementById("ratingThanks").style.display = "block";
+    setTimeout(() => {
+      closeRatingModal();
+      // Reset everything so the modal is fresh if they open it again later.
+      selectedStars = 0;
+      document.querySelectorAll("#starRow .star-btn").forEach(b => b.classList.remove("selected"));
+      document.getElementById("ratingComment").value = "";
+      document.getElementById("ratingSubmitBtn").style.display = "block";
+      document.getElementById("ratingSubmitBtn").textContent = "Submit Rating";
+      document.getElementById("ratingSubmitBtn").disabled = true;
+      document.getElementById("ratingThanks").style.display = "none";
+    }, 2000);
+  } catch (err) {
+    // If saving the rating fails (e.g. no internet), let the user know
+    // instead of pretending it worked.
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Submit Rating";
+    alert("Sorry, we couldn't save your rating. Please try again.");
+  }
+}
+
+const localKnowledge = {
+  "bpo": {
+    keywords: ["bpo", "outsourcing", "business process"],
+    response: "Business Process Outsourcing (BPO) is when a company hires experts to handle specific tasks like customer service, data entry, or administrative work. Outsource Development Studio helps businesses in Dominica and across the Caribbean streamline their operations, reduce costs, and focus on what they do best—growing their business! 💼"
+  },
+  "recruitment": {
+    keywords: ["recruitment", "hire", "talent", "eor", "employee"],
+    response: "Our recruitment services help you find the perfect talent for your team. We also offer Employer of Record (EOR) services, which means we can legally hire and manage employees on your behalf in Dominica—handling payroll, benefits, and compliance so you don't have to worry about the paperwork! 👥"
+  },
+  "training": {
+    keywords: ["training", "seminar", "uwi", "cave hill", "course"],
+    response: "We partner with the UWI Cave Hill School of Business to offer quarterly corporate training seminars! These programs are designed to upskill your team in leadership, management, and business strategy. It's a unique offering that sets Outsource Development Studio apart from other consultancies. 🎓"
+  },
+  "logistics": {
+    keywords: ["logistics", "trucking", "import", "export", "supply chain"],
+    response: "Our logistics division handles trucking, import-export services, and supply chain management across Dominica. Whether you need to move goods locally or manage international shipments, we ensure your products get where they need to go—on time and efficiently! 🚚"
+  },
+  "resilience": {
+    keywords: ["resilience", "sustainability", "climate", "disaster"],
+    response: "We specialize in resilience and sustainability planning to help businesses prepare for climate challenges and natural disasters. Our team develops business continuity plans that keep your operations running smoothly, even when hurricanes or other disruptions hit. It's about building a future-proof business! 🌱"
+  },
+  "consulting": {
+    keywords: ["consulting", "strategy", "advice", "consultation"],
+    response: "Our strategic consulting services provide one-on-one expert guidance to help your business grow. From market analysis to operational improvements, we work closely with you to develop actionable strategies. Ready to get started? Click 'Book Consultation' to schedule a meeting with our team! 📊"
+  },
+  "booking": {
+    keywords: ["book", "appointment", "consultation", "meeting", "schedule"],
+    response: "Great! To book a consultation, simply click the '📅 Book Consultation' button at the top, and our team will get back to you within 24 hours to schedule your meeting! 📅"
+  },
+  "about": {
+    keywords: ["about", "who are you", "company", "dominica"],
+    response: "Outsource Development Studio is a full-service consultancy based in Roseau, Dominica, with over 15 years of experience. We help businesses across the Caribbean with BPO, recruitment, training, logistics, resilience planning, and strategic consulting. Our mission is to empower businesses to grow sustainably and efficiently! 🏢"
+  }
+};
+
+function checkLocalKnowledge(message) {
+  const lowerMessage = message.toLowerCase();
+  for (const [key, data] of Object.entries(localKnowledge)) {
+    for (const keyword of data.keywords) {
+      if (lowerMessage.includes(keyword)) {
+        return data.response;
+      }
+    }
+  }
+  return null;
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('light-mode');
+  const isLight = document.body.classList.contains('light-mode');
+  document.getElementById('themeBtn').textContent = isLight ? '☀️' : '🌙';
+  localStorage.setItem('nexa-theme', isLight ? 'light' : 'dark');
+}
+if (localStorage.getItem('nexa-theme') === 'light') toggleTheme();
+
+if ('webkitSpeechRecognition' in window) {
+  recognition = new webkitSpeechRecognition();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.onresult = (event) => {
+    document.getElementById("input").value = event.results[0][0].transcript;
+    toggleMic();
+    sendMsg();
+  };
+  recognition.onerror = () => toggleMic();
+}
+
+function toggleMic() {
+  if (!recognition) {
+    alert("Voice input not supported in this browser. Try Chrome or Edge!");
+    return;
+  }
+  const btn = document.getElementById("micBtn");
+  const input = document.getElementById("input");
+  if (isListening) {
+    recognition.stop();
+    isListening = false;
+    btn.style.color = "var(--muted-text)";
+    input.style.borderColor = "var(--border)";
+    input.placeholder = "Message Nexa...";
+  } else {
+    recognition.start();
+    isListening = true;
+    btn.style.color = "var(--primary)";
+    input.style.borderColor = "var(--primary)";
+    input.placeholder = "Listening...";
+  }
+}
+
+function openModal() {
+  document.getElementById("jotformModal").style.display = "flex";
+}
+function closeModal() {
+  document.getElementById("jotformModal").style.display = "none";
+}
+
+function send(text) {
+  document.getElementById("input").value = text;
+  sendMsg();
+}
+
+function clearChat() {
+  document.getElementById("messages").innerHTML = `
+    <div class="message bot">
+      <img src="/assets/bot-avatar.png" alt="Nexa Bot" class="avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+      <div class="avatar" style="display:none;">🤖</div>
+      <div class="bubble">Hello! I'm <strong>Nexa</strong>. I can help you with Outsource Development Studio's Services. What would you like to know?</div>
+    </div>`;
+}
+
+async function sendMsg() {
+  const input = document.getElementById("input");
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  addMessage(msg, "user");
+  input.value = "";
+
+  const btn = document.getElementById("sendBtn");
+  btn.disabled = true;
+  btn.innerHTML = "<span style='font-size:1.2rem'>⏳</span>";
+
+  const loadingId = addMessage("Thinking...", "bot", true);
+
+  const localResponse = checkLocalKnowledge(msg);
+
+  if (localResponse) {
+    setTimeout(() => {
+      removeMessage(loadingId);
+      addMessage(localResponse, "bot", false);
+      btn.disabled = false;
+      btn.textContent = "Send";
+    }, 800);
+  } else {
+    try {
+      // 📌 NEW: we now also send `session_id` so the backend's journey
+      // tracker and rating log can (loosely) tell visitors apart.
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg, session_id: sessionId })
+      });
+      const data = await res.json();
+      removeMessage(loadingId);
+      addMessage(data.response, "bot", false);
+
+      // 📌 NEW: remember this reply's id/text, so if the user clicks
+      // "Rate this chatbot" afterward, we can attach it to the rating.
+      if (data.message_id) lastBotMessageId = data.message_id;
+      if (data.response) lastBotResponseText = data.response;
+    } catch (err) {
+      removeMessage(loadingId);
+      addMessage("I'd love to help with that! For now, try clicking one of the quick buttons above to learn about our services, or click 'Book Consultation' at the top to speak with our team directly. 🤖", "bot");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Send";
+    }
+  }
+}
+
+function addMessage(text, sender, isLoading = false) {
+  const container = document.getElementById("messages");
+  const div = document.createElement("div");
+  div.className = `message ${sender}`;
+  const id = Date.now();
+  div.id = `msg-${id}`;
+
+  const safeText = text.replace(/"/g, '&quot;').replace(/\n/g, ' ');
+  const voiceBtn = (sender === "bot" && !isLoading) ?
+    `<button class="voice-btn" onclick="speakText(this)" data-text="${safeText}" title="Listen">🔊</button>` : '';
+
+  const avatarImg = sender === "bot" ? "/assets/bot-avatar.png" : "/assets/user-avatar.png";
+  const fallbackEmoji = sender === "bot" ? "🤖" : "👤";
+
+  div.innerHTML = `
+    <img src="${avatarImg}" alt="${sender} avatar" class="avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+    <div class="avatar" style="display:none;">${fallbackEmoji}</div>
+    <div class="bubble" style="${isLoading ? 'opacity:0.6' : ''}">
+      ${text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>")}
     </div>
+    ${voiceBtn}
+  `;
 
-    <script>
-        const API_URL = "/chat"; 
-        let isListening = false;
-        let recognition;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return id;
+}
 
-        const localKnowledge = {
-            "bpo": {
-                keywords: ["bpo", "outsourcing", "business process"],
-                response: "Business Process Outsourcing (BPO) is when a company hires experts to handle specific tasks like customer service, data entry, or administrative work. Outsource Development Studio helps businesses in Dominica and across the Caribbean streamline their operations, reduce costs, and focus on what they do best—growing their business! 💼"
-            },
-            "recruitment": {
-                keywords: ["recruitment", "hire", "talent", "eor", "employee"],
-                response: "Our recruitment services help you find the perfect talent for your team. We also offer Employer of Record (EOR) services, which means we can legally hire and manage employees on your behalf in Dominica—handling payroll, benefits, and compliance so you don't have to worry about the paperwork! 👥"
-            },
-            "training": {
-                keywords: ["training", "seminar", "uwi", "cave hill", "course"],
-                response: "We partner with the UWI Cave Hill School of Business to offer quarterly corporate training seminars! These programs are designed to upskill your team in leadership, management, and business strategy. It's a unique offering that sets Outsource Development Studio apart from other consultancies. 🎓"
-            },
-            "logistics": {
-                keywords: ["logistics", "trucking", "import", "export", "supply chain"],
-                response: "Our logistics division handles trucking, import-export services, and supply chain management across Dominica. Whether you need to move goods locally or manage international shipments, we ensure your products get where they need to go—on time and efficiently! 🚚"
-            },
-            "resilience": {
-                keywords: ["resilience", "sustainability", "climate", "disaster"],
-                response: "We specialize in resilience and sustainability planning to help businesses prepare for climate challenges and natural disasters. Our team develops business continuity plans that keep your operations running smoothly, even when hurricanes or other disruptions hit. It's about building a future-proof business! 🌱"
-            },
-            "consulting": {
-                keywords: ["consulting", "strategy", "advice", "consultation"],
-                response: "Our strategic consulting services provide one-on-one expert guidance to help your business grow. From market analysis to operational improvements, we work closely with you to develop actionable strategies. Ready to get started? Click 'Book Consultation' to schedule a meeting with our team! 📊"
-            },
-            "booking": {
-                keywords: ["book", "appointment", "consultation", "meeting", "schedule"],
-                response: "Great! To book a consultation, simply click the '📅 Book Consultation' button at the top, and our team will get back to you within 24 hours to schedule your meeting! 📅"
-            },
-            "about": {
-                keywords: ["about", "who are you", "company", "dominica"],
-                response: "Outsource Development Studio is a full-service consultancy based in Roseau, Dominica, with over 15 years of experience. We help businesses across the Caribbean with BPO, recruitment, training, logistics, resilience planning, and strategic consulting. Our mission is to empower businesses to grow sustainably and efficiently! 🏢"
-            }
-        };
+function removeMessage(id) {
+  const el = document.getElementById(`msg-${id}`);
+  if (el) el.remove();
+}
 
-        function checkLocalKnowledge(message) {
-            const lowerMessage = message.toLowerCase();
-            for (const [key, data] of Object.entries(localKnowledge)) {
-                for (const keyword of data.keywords) {
-                    if (lowerMessage.includes(keyword)) {
-                        return data.response;
-                    }
-                }
-            }
-            return null;
-        }
+function speakText(buttonElement) {
+  window.speechSynthesis.cancel();
+  const rawText = buttonElement.getAttribute("data-text");
+  const cleanText = rawText.replace(/<[^>]*>/g, "").replace(/\*\*/g, "");
+  const utterance = new SpeechSynthesisUtterance(cleanText);
+  utterance.rate = 1.0;
+  const voices = window.speechSynthesis.getVoices();
+  const preferredVoice = voices.find(v => v.lang.includes('en-US') || v.lang.includes('en-GB'));
+  if (preferredVoice) utterance.voice = preferredVoice;
+  window.speechSynthesis.speak(utterance);
+}
 
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            document.getElementById('themeBtn').textContent = isLight ? '☀️' : '🌙';
-            localStorage.setItem('nexa-theme', isLight ? 'light' : 'dark');
-        }
-        if (localStorage.getItem('nexa-theme') === 'light') toggleTheme();
-
-        if ('webkitSpeechRecognition' in window) {
-            recognition = new webkitSpeechRecognition();
-            recognition.continuous = false;
-            recognition.interimResults = false;
-            recognition.onresult = (event) => {
-                document.getElementById("input").value = event.results[0][0].transcript;
-                toggleMic();
-                sendMsg();
-            };
-            recognition.onerror = () => toggleMic();
-        }
-
-        function toggleMic() {
-            if (!recognition) { 
-                alert("Voice input not supported in this browser. Try Chrome or Edge!"); 
-                return; 
-            }
-            const btn = document.getElementById("micBtn");
-            const input = document.getElementById("input");
-            if (isListening) {
-                recognition.stop(); 
-                isListening = false;
-                btn.style.color = "var(--muted-text)";
-                input.style.borderColor = "var(--border)";
-                input.placeholder = "Message Nexa...";
-            } else {
-                recognition.start(); 
-                isListening = true;
-                btn.style.color = "var(--primary)";
-                input.style.borderColor = "var(--primary)";
-                input.placeholder = "Listening...";
-            }
-        }
-
-        function openModal() { 
-            document.getElementById("jotformModal").style.display = "flex"; 
-        }
-        function closeModal() { 
-            document.getElementById("jotformModal").style.display = "none"; 
-        }
-
-        function send(text) { 
-            document.getElementById("input").value = text; 
-            sendMsg(); 
-        }
-        
-        function clearChat() {
-            document.getElementById("messages").innerHTML = `
-                <div class="message bot">
-                    <img src="/assets/bot-avatar.png" 
-                         alt="Nexa Bot" 
-                         class="avatar"
-                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                    <div class="avatar" style="display:none;">🤖</div>
-                    <div class="bubble">Hello! I'm <strong>Nexa</strong>. I can help you with Outsource Development Studio's Services. What would you like to know?</div>
-                </div>`;
-        }
-
-        async function sendMsg() {
-            const input = document.getElementById("input");
-            const msg = input.value.trim();
-            if (!msg) return;
-
-            addMessage(msg, "user");
-            input.value = "";
-            
-            const btn = document.getElementById("sendBtn");
-            btn.disabled = true; 
-            btn.innerHTML = "<span style='font-size:1.2rem'>⏳</span>";
-
-            const loadingId = addMessage("Thinking...", "bot", true);
-            const localResponse = checkLocalKnowledge(msg);
-            
-            if (localResponse) {
-                setTimeout(() => {
-                    removeMessage(loadingId);
-                    addMessage(localResponse, "bot", false);
-                    btn.disabled = false; 
-                    btn.textContent = "Send";
-                }, 800);
-            } else {
-                try {
-                    const res = await fetch(API_URL, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ message: msg })
-                    });
-                    const data = await res.json();
-                    removeMessage(loadingId);
-                    addMessage(data.response, "bot", false);
-                } catch (err) {
-                    removeMessage(loadingId);
-                    addMessage("I'd love to help with that! For now, try clicking one of the quick buttons above to learn about our services, or click 'Book Consultation' at the top to speak with our team directly. 🤖", "bot");
-                } finally {
-                    btn.disabled = false; 
-                    btn.textContent = "Send";
-                }
-            }
-        }
-
-        function addMessage(text, sender, isLoading = false) {
-            const container = document.getElementById("messages");
-            const div = document.createElement("div");
-            div.className = `message ${sender}`;
-            const id = Date.now();
-            div.id = `msg-${id}`;
-            
-            const safeText = text.replace(/"/g, '&quot;').replace(/\n/g, ' ');
-            const voiceBtn = (sender === "bot" && !isLoading) ? 
-                `<button class="voice-btn" onclick="speakText(this)" data-text="${safeText}" title="Listen">🔊</button>` : '';
-
-            const avatarImg = sender === "bot" ? "/assets/bot-avatar.png" : "/assets/user-avatar.png";
-            const fallbackEmoji = sender === "bot" ? "🤖" : "👤";
-
-            div.innerHTML = `
-                <img src="${avatarImg}" 
-                     alt="${sender} avatar" 
-                     class="avatar"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                <div class="avatar" style="display:none;">${fallbackEmoji}</div>
-                <div class="bubble" style="${isLoading ? 'opacity:0.6' : ''}">
-                    ${text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>")}
-                </div>
-                ${voiceBtn}
-            `;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-            return id;
-        }
-
-        function removeMessage(id) {
-            const el = document.getElementById(`msg-${id}`);
-            if (el) el.remove();
-        }
-
-        function speakText(buttonElement) {
-            window.speechSynthesis.cancel();
-            const rawText = buttonElement.getAttribute("data-text");
-            const cleanText = rawText.replace(/<[^>]*>/g, "").replace(/\*\*/g, "");
-            const utterance = new SpeechSynthesisUtterance(cleanText);
-            utterance.rate = 1.0;
-            const voices = window.speechSynthesis.getVoices();
-            const preferredVoice = voices.find(v => v.lang.includes('en-US') || v.lang.includes('en-GB'));
-            if (preferredVoice) utterance.voice = preferredVoice;
-            window.speechSynthesis.speak(utterance);
-        }
-        window.speechSynthesis.onvoiceschanged = () => { 
-            window.speechSynthesis.getVoices(); 
-        };
-    </script>
+window.speechSynthesis.onvoiceschanged = () => {
+  window.speechSynthesis.getVoices();
+};
+</script>
 </body>
 </html>
