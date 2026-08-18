@@ -483,7 +483,11 @@ def call_llm(prompt: str, user_msg: str) -> str:
         result = safe_call(
             call_gemini, prompt, safe_msg,
             fallback=None,  # if it fails, return None (not a fake message) so we know to try Grok next
-            on_error=lambda e: log_bug(user_msg, f"Gemini error: {e}", "gemini_api"),
+            # 📌 TEMP DEBUG: print() shows up live in Render's Logs tab,
+            # unlike log_bug() which only writes quietly to a CSV file on
+            # disk. This line is safe to leave in — it just helps you see
+            # the *real* Gemini error message instantly while debugging.
+            on_error=lambda e: (print(f"🔴 GEMINI ERROR: {e}"), log_bug(user_msg, f"Gemini error: {e}", "gemini_api")),
         )
         if result:
             return result
@@ -492,7 +496,7 @@ def call_llm(prompt: str, user_msg: str) -> str:
         result = safe_call(
             call_grok, prompt, safe_msg,
             fallback=None,
-            on_error=lambda e: log_bug(user_msg, f"Grok error: {e}", "grok_api"),
+            on_error=lambda e: (print(f"🔴 GROK ERROR: {e}"), log_bug(user_msg, f"Grok error: {e}", "grok_api")),
         )
         if result:
             return result
