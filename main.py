@@ -269,6 +269,56 @@ def detect_register(msg: str) -> str:
     return "warm"  # the friendly default tone
 
 # ==============================================================================
+# 👤 AXIS 4: PERSONA (who the user IS, not how they're feeling)
+# ==============================================================================
+# 📌 NEW: This is deliberately a SEPARATE axis from "register" above.
+# Register is about TONE (how upset/formal/urgent someone sounds) —
+# persona is about WHO the user is and what kind of help they actually
+# need. Two people can share the same tone (both "warm") while needing
+# completely different information: a business owner exploring BPO vs.
+# a job seeker asking about openings. Mixing the two into one variable
+# would mean the bot could only adapt HOW it talks, never WHAT it
+# focuses on — this keeps those two decisions independent so the prompt
+# can combine any tone with any persona (e.g. an urgent job seeker,
+# a warm business owner).
+PERSONAS = {
+    "business_owner": {
+        "label": "Prospective business client",
+        "keywords": ["outsourc", "bpo", "cut costs", "my business", "my company", "hire a team", "grow my business"],
+        "focus": "They're evaluating whether outsourcing fits their business. Focus on BPO, logistics, and resilience planning. Speak business-owner-to-business-owner — practical, ROI-minded, no fluff.",
+    },
+    "job_seeker": {
+        "label": "Job seeker / recruitment candidate",
+        "keywords": ["hire me", "job opening", "vacancy", "apply for a job", "my cv", "my resume", "looking for work", "job opportunities"],
+        "focus": "They want to know how to get hired or considered. Focus on the recruitment/EOR process and how to apply. Be encouraging and concrete about next steps — never vague.",
+    },
+    "hr_training_coordinator": {
+        "label": "HR / training coordinator",
+        "keywords": ["our staff", "our team", "upskill", "corporate training", "seminar for", "training for my", "employees need"],
+        "focus": "They're arranging training or development for a team, not for themselves. Focus on UWI Cave Hill corporate seminars — what's offered, how to book multiple seats.",
+    },
+    "logistics_contact": {
+        "label": "Logistics / import-export contact",
+        "keywords": ["shipping", "logistics", "import", "export", "supply chain", "trucking", "customs", "freight"],
+        "focus": "They need something physically moved or cleared. Focus on trucking, import/export, and supply-chain support — be concrete about what's handled.",
+    },
+}
+
+def detect_persona(msg: str) -> Optional[str]:
+    """
+    Looks for keywords that signal WHO is asking (their role/situation),
+    as opposed to detect_register() above, which looks for HOW they're
+    asking. Returns the matching persona's key, or None if nothing
+    matched — in which case the bot just uses a general, friendly
+    default instead of guessing at a specific user type.
+    """
+    m = msg.lower()
+    for key, data in PERSONAS.items():
+        if any(kw in m for kw in data["keywords"]):
+            return key
+    return None
+
+# ==============================================================================
 # 🔒 DAY 11: PII REDACTION
 # ==============================================================================
 # "PII" = Personally Identifiable Information (emails, phone numbers,
@@ -394,7 +444,7 @@ def safe_call(fn: Callable, *args, fallback: str = None, on_error=None, **kwargs
             on_error(exc)
         return fallback or "I hit a snag. Let me connect you with a human agent right now."
 
-def build_tcrdei_prompt(service_data: dict, register: str, journey_step: str = "greeting") -> str:
+def build_tcrdei_prompt(service_data: dict, register: str, journey_step: str = "greeting", persona: str = None) -> str:
     """
     Builds the instructions ("system prompt") we send to the AI model
     before the user's actual question. This tells the AI: who it is, what
@@ -424,6 +474,16 @@ def build_tcrdei_prompt(service_data: dict, register: str, journey_step: str = "
         "confirm_close": "Wrap up warmly. Confirm they have what they need, and remind them how to book if they want to continue.",
     }
 
+    # 📌 NEW: persona is WHO the user is (their role/situation), separate
+    # from register (HOW they're feeling/talking) above. If detect_persona()
+    # found a match, we tell the AI to focus its answer accordingly. If it
+    # didn't match anyone specific, we say so explicitly — the AI should
+    # stay general rather than guessing at a persona from thin evidence.
+    if persona and persona in PERSONAS:
+        persona_hint = f"USER TYPE: {PERSONAS[persona]['label']}. {PERSONAS[persona]['focus']}"
+    else:
+        persona_hint = "USER TYPE: Not yet clear. Keep the answer general and, if it would help, ask a brief clarifying question to understand their situation."
+
     # This is an "f-string" (formatted string) — anything inside {curly
     # braces} gets replaced with the actual value of that variable.
     return f"""
@@ -437,6 +497,8 @@ Ethical rule: You are the GPS; the human is the driver. NEVER quote prices.
 {tone_hints.get(register, tone_hints['warm'])}
 
 CONVERSATION STAGE: {journey_step}. {journey_hints.get(journey_step, journey_hints['greeting'])}
+
+{persona_hint}
 
 LANGUAGE: Always reply in the SAME language (or Caribbean English/Kwéyòl
 patois expression) the user just wrote in. If they write in Spanish,
@@ -644,6 +706,10 @@ JOURNEY_STEPS = ["greeting", "identify_need", "collect_facts", "offer_next_step"
 # the bot at once unless each visitor sends a truly unique session_id.
 session_states: Dict[str, int] = {}
 
+# 📌 NEW: remembers which persona (user type) we've detected for each
+# session, so it "sticks" across turns instead of resetting every message.
+session_personas: Dict[str, str] = {}
+
 # ==============================================================================
 # 🌐 PYDANTIC MODELS
 # ==============================================================================
@@ -711,8 +777,8 @@ async def chat(request: ChatRequest):
     if current_step < len(JOURNEY_STEPS) - 1:
         session_states[session_id] = current_step + 1
 
-    # STEP 4: Figure out the tone to use, and which service (if any) the
-    # user seems to be asking about.
+    # STEP 4: Figure out the tone to use, which service (if any) the user
+    # seems to be asking about, and what kind of user they seem to be.
     register = detect_register(msg)
     service_key = detect_service(msg)
     svc = SERVICES.get(
@@ -720,12 +786,23 @@ async def chat(request: ChatRequest):
         {"name": "our services", "plain": "Please tell me which service you'd like help with."},
     )
 
+    # 📌 NEW: persona detection. Once we detect a persona for a session,
+    # we remember it (like journey_step) rather than re-detecting fresh
+    # every turn — otherwise a follow-up message like "how much time
+    # would that save me?" (no persona keywords) would lose the context
+    # that this is a business owner, not a job seeker.
+    detected_persona = detect_persona(msg)
+    if detected_persona:
+        session_personas[session_id] = detected_persona
+    persona = session_personas.get(session_id)
+
     # STEP 5: Build the instructions for the AI (now including which
-    # journey stage this visitor is on), then actually ask it for a
-    # reply — passing session_id so it remembers earlier turns of THIS
-    # conversation instead of treating every message as brand new.
+    # journey stage this visitor is on, and who they seem to be), then
+    # actually ask it for a reply — passing session_id so it remembers
+    # earlier turns of THIS conversation instead of treating every
+    # message as brand new.
     current_journey_step = JOURNEY_STEPS[session_states.get(session_id, 0)]
-    prompt = build_tcrdei_prompt(svc, register, current_journey_step)
+    prompt = build_tcrdei_prompt(svc, register, current_journey_step, persona)
     response_text = call_llm(prompt, msg, session_id)
 
     # STEP 6: Send everything back to the webpage as a dictionary. FastAPI
@@ -738,6 +815,7 @@ async def chat(request: ChatRequest):
         "distress": False,
         "register": register,
         "service": service_key,
+        "persona": persona,
         "journey_step": JOURNEY_STEPS[session_states.get(session_id, 0)],
     }
 
