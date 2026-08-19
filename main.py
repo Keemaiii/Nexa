@@ -90,6 +90,9 @@ from dotenv import load_dotenv
 # ".env" on our own computer, instead of typing them directly in this file.
 # That way we never accidentally upload our secret keys to GitHub!
 
+# 📌 NEW: Import our local knowledge base
+from local_knowledge import SERVICES, detect_service
+
 load_dotenv()
 # This line actually reads the ".env" file (if it exists) and loads those
 # secret values so `os.getenv(...)` can find them later in this file.
